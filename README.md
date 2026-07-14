@@ -1,4 +1,4 @@
-# RetroAchievements Organizer
+# RetroAchievements Library
 
 A desktop application built with Flutter to organize, browse, and interact with your RetroAchievements library. 
 
