@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:retroachievements_organizer/constants/constants.dart';
 import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
 import 'package:retroachievements_organizer/widgets/common_widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -25,16 +26,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  // Navigate to register screen using GoRouter
-  void _navigateToRegister() {
-    context.push('/register');
+  // Navigate to register screen using url_launcher
+  Future<void> _navigateToRegister() async {
+    final url = Uri.parse('https://retroachievements.org/createaccount.php');
+    if (!await launchUrl(url)) {
+      debugPrint('Could not launch $url');
+    }
   }
-
-  // Navigate to forgot password screen using GoRouter
-  void _navigateToForgotPassword() {
-    context.push('/forgot-password');
-  }
-  
   // Handle login
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
@@ -101,11 +99,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo
-                  Image.asset(
-                    'images/ra-icon.png',
-                    height: 100,
-                    width: 100,
+                  // Logo and Text
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'images/ra-icon.png',
+                        height: 100,
+                        width: 100,
+                      ),
+                      const SizedBox(width: 16),
+                      const Text(
+                        'LIBRARY',
+                        style: TextStyle(
+                          fontSize: 52,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 40),
                   
@@ -169,18 +181,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                         ],
-                      ),
-                      // Forgot password link
-                      TextButton(
-                        onPressed: _navigateToForgotPassword,
-                        child: const Text(
-                          AppStrings.forgotPassword,
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ),
                     ],
                   ),

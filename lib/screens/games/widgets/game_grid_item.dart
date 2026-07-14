@@ -56,7 +56,7 @@ class GameGridItem extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.8),
+                        color: statusColor.withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -77,7 +77,7 @@ class GameGridItem extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.darkBackground.withOpacity(0.8),
+                        color: AppColors.darkBackground.withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
@@ -106,9 +106,9 @@ class GameGridItem extends StatelessWidget {
             
             // Game title
             Expanded(
-              flex: 3,
+              flex: 4,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(4.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -116,45 +116,48 @@ class GameGridItem extends StatelessWidget {
                       game.title,
                       style: const TextStyle(
                         color: AppColors.textLight,
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
-                      '${GamesHelper.formatPoints(game.points)} points',
+                      '${GamesHelper.formatPoints(game.points)} pts',
                       style: const TextStyle(
                         color: AppColors.primary,
-                        fontSize: 12,
+                        fontSize: 9,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     if (matchStatus != null)
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: statusColor,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${game.hashes.length} hashes',
-                                style: TextStyle(
-                                  color: statusColor,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
+                      const Spacer(),
+                    if (matchStatus != null)
+                      Row(
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: statusColor,
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              '${game.hashes.length} hashes',
+                              style: TextStyle(
+                                color: statusColor,
+                                fontSize: 9,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                   ],
                 ),

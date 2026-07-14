@@ -2,17 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_organizer/screens/achievements/utils/achievement_sorter.dart';
 
-class AchievementFilters extends StatelessWidget {
-  final bool showOnlyCompleted;
+class AchievementFilters extends StatefulWidget {
+  final CompletionFilterStatus completionStatus;
   final Set<String> selectedPlatforms;
   final List<dynamic> games;
-  final Function({bool? showOnlyCompleted, Set<String>? selectedPlatforms}) onFilterChanged;
+  final Function({CompletionFilterStatus? completionStatus, Set<String>? selectedPlatforms}) onFilterChanged;
   final VoidCallback onClearFilters;
 
   const AchievementFilters({
     super.key,
-    required this.showOnlyCompleted,
+    required this.completionStatus,
     required this.selectedPlatforms,
     required this.games,
     required this.onFilterChanged,
@@ -20,120 +21,152 @@ class AchievementFilters extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: AppColors.cardBackground,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Filters',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            
-            // Show only completed games checkbox
-            Row(
-              children: [
-                Checkbox(
-                  value: showOnlyCompleted,
-                  onChanged: (value) {
-                    onFilterChanged(showOnlyCompleted: value ?? false);
-                  },
-                  fillColor: WidgetStateProperty.resolveWith<Color>(
-                    (Set<WidgetState> states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return AppColors.primary;
-                      }
-                      return Colors.grey;
-                    },
-                  ),
-                  checkColor: AppColors.darkBackground,
-                ),
-                const Text(
-                  'Show only completed games',
-                  style: TextStyle(color: AppColors.textLight),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 12),
-            const Text(
-              'Filter by Platform:',
-              style: TextStyle(
-                color: AppColors.textLight,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            
-            // Platform filter chips
-            _buildPlatformFilterChips(),
-            
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: onClearFilters,
-                  child: const Text(
-                    'Clear All Filters',
-                    style: TextStyle(color: AppColors.primary),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+  State<AchievementFilters> createState() => _AchievementFiltersState();
+}
+
+class _AchievementFiltersState extends State<AchievementFilters> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
-  
-  Widget _buildPlatformFilterChips() {
+
+  @override
+  Widget build(BuildContext context) {
     // Get unique console names from results
     Set<String> consoleNames = {};
-    for (var game in games) {
+    for (var game in widget.games) {
       final consoleName = game.consoleName;
       if (consoleName.isNotEmpty) {
         consoleNames.add(consoleName);
       }
     }
-    
-    // Convert to sorted list
     final platforms = consoleNames.toList()..sort();
     
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: platforms.map((platform) {
-        final isSelected = selectedPlatforms.contains(platform);
-        return FilterChip(
-          label: Text(platform),
-          selected: isSelected,
-          selectedColor: AppColors.primary.withOpacity(0.3),
-          checkmarkColor: AppColors.primary,
-          backgroundColor: AppColors.darkBackground,
-          labelStyle: TextStyle(
-            color: isSelected ? AppColors.primary : AppColors.textLight,
+    // Determine if any filters are active
+    final bool hasActiveFilters = widget.completionStatus != CompletionFilterStatus.all || widget.selectedPlatforms.isNotEmpty;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 180),
+        child: RawScrollbar(
+          controller: _scrollController,
+          thumbColor: AppColors.primary.withValues(alpha: 0.5),
+          radius: const Radius.circular(4),
+          thickness: 6,
+          thumbVisibility: true,
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            padding: const EdgeInsets.only(right: 12),
+            child: Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                // 1. Clear Filters Button (Always to the left if active)
+                if (hasActiveFilters)
+                  ActionChip(
+                    visualDensity: VisualDensity.compact,
+                    backgroundColor: AppColors.error.withValues(alpha: 0.1),
+                    side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
+                    label: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.clear, size: 14, color: AppColors.error),
+                        SizedBox(width: 4),
+                        Text('Clear', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold, fontSize: 12)),
+                      ],
+                    ),
+                    onPressed: widget.onClearFilters,
+                  ),
+                
+                // 2. Completion Status Chips
+                _buildCompletionChip('Show All', CompletionFilterStatus.all, Icons.list),
+                _buildCompletionChip('Completed', CompletionFilterStatus.completedOnly, Icons.emoji_events),
+                _buildCompletionChip('Unfinished', CompletionFilterStatus.hideCompleted, Icons.hourglass_empty),
+
+                if (platforms.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    height: 24,
+                    child: VerticalDivider(color: Colors.white.withValues(alpha: 0.1), width: 1),
+                  ),
+                
+                // 3. Platform Chips
+                ...platforms.map((platform) {
+                  final isSelected = widget.selectedPlatforms.contains(platform);
+                  return FilterChip(
+                    visualDensity: VisualDensity.compact,
+                    label: Text(platform),
+                    selected: isSelected,
+                    selectedColor: AppColors.primary.withValues(alpha: 0.2),
+                    checkmarkColor: AppColors.primary,
+                    backgroundColor: AppColors.darkBackground,
+                    side: BorderSide(
+                      color: isSelected 
+                          ? AppColors.primary.withValues(alpha: 0.5) 
+                          : Colors.white.withValues(alpha: 0.1),
+                    ),
+                    labelStyle: TextStyle(
+                      fontSize: 12, // Smaller font for platforms
+                      color: isSelected ? AppColors.primary : AppColors.textLight,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                    onSelected: (selected) {
+                      final newSelectedPlatforms = Set<String>.from(widget.selectedPlatforms);
+                      if (selected) {
+                        newSelectedPlatforms.add(platform);
+                      } else {
+                        newSelectedPlatforms.remove(platform);
+                      }
+                      widget.onFilterChanged(selectedPlatforms: newSelectedPlatforms);
+                    },
+                  );
+                }),
+              ],
+            ),
           ),
-          onSelected: (selected) {
-            final newSelectedPlatforms = Set<String>.from(selectedPlatforms);
-            if (selected) {
-              newSelectedPlatforms.add(platform);
-            } else {
-              newSelectedPlatforms.remove(platform);
-            }
-            onFilterChanged(selectedPlatforms: newSelectedPlatforms);
-          },
-        );
-      }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompletionChip(String label, CompletionFilterStatus status, IconData icon) {
+    final isSelected = widget.completionStatus == status;
+    return FilterChip(
+      visualDensity: VisualDensity.compact,
+      showCheckmark: false,
+      selected: isSelected,
+      selectedColor: AppColors.info.withValues(alpha: 0.2),
+      backgroundColor: AppColors.darkBackground,
+      side: BorderSide(
+        color: isSelected 
+            ? AppColors.info.withValues(alpha: 0.5) 
+            : Colors.white.withValues(alpha: 0.1),
+      ),
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: isSelected ? AppColors.info : AppColors.textLight,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isSelected ? AppColors.info : AppColors.textLight,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+      onSelected: (_) => widget.onFilterChanged(completionStatus: status),
     );
   }
 }

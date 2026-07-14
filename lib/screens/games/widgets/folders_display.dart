@@ -5,11 +5,13 @@ import 'package:retroachievements_organizer/constants/constants.dart';
 class FoldersDisplayWidget extends StatefulWidget {
   final List<String> folders;
   final VoidCallback onAddFolder;
+  final bool isHashingInProgress;
 
   const FoldersDisplayWidget({
     super.key,
     required this.folders,
     required this.onAddFolder,
+    required this.isHashingInProgress,
   });
 
   @override
@@ -56,7 +58,7 @@ class _FoldersDisplayWidgetState extends State<FoldersDisplayWidget> {
                       ),
                     IconButton(
                       icon: const Icon(Icons.add_circle, color: AppColors.primary),
-                      onPressed: widget.onAddFolder,
+                      onPressed: widget.isHashingInProgress ? null : widget.onAddFolder,
                       tooltip: 'Add Folder',
                     ),
                   ],

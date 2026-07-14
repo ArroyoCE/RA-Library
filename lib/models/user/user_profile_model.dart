@@ -50,7 +50,7 @@ class UserProfile {
       permissions: json['Permissions'] ?? 0,
       untracked: json['Untracked'] ?? 0,
       id: json['ID'] ?? 0,
-      userWallActive: json['UserWallActive'] ?? false,
+      userWallActive: json['UserWallActive'] == 1 || json['UserWallActive'] == true || json['UserWallActive'] == '1',
       motto: json['Motto'] ?? '',
     );
   }

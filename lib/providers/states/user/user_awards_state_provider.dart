@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retroachievements_organizer/models/user/user_awards_model.dart';
-import 'package:retroachievements_organizer/providers/repositories/user/user_awards_repository_provider.dart';
+import 'package:retroachievements_organizer/providers/repositories/user/user_stats_repository_provider.dart';
 import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/user/user_awards_repository.dart';
+import 'package:retroachievements_organizer/repositories/user/user_stats_repository.dart';
 
 class UserAwardsState {
   final bool isLoading;
@@ -33,11 +33,11 @@ class UserAwardsState {
 }
 
 class UserAwardsNotifier extends StateNotifier<UserAwardsState> {
-  final UserAwardsRepository userAwardsRepository;
+  final UserStatsRepository repository;
   final String username;
   final String apiKey;
 
-  UserAwardsNotifier(this.userAwardsRepository, this.username, this.apiKey) 
+  UserAwardsNotifier(this.repository, this.username, this.apiKey) 
       : super(UserAwardsState()) {
     if (username.isNotEmpty && apiKey.isNotEmpty) {
       loadData();
@@ -56,7 +56,7 @@ class UserAwardsNotifier extends StateNotifier<UserAwardsState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      final userAwards = await userAwardsRepository.getUserAwards(
+      final userAwards = await repository.getUserAwards(
         username, 
         apiKey, 
         useCache: !forceRefresh
@@ -85,7 +85,7 @@ class UserAwardsNotifier extends StateNotifier<UserAwardsState> {
 
 final userAwardsStateProvider = StateNotifierProvider<UserAwardsNotifier, UserAwardsState>((ref) {
   final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(userAwardsRepositoryProvider);
+  final repository = ref.watch(userStatsRepositoryProvider);
   
   return UserAwardsNotifier(
     repository, 

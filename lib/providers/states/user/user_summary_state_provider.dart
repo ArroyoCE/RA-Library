@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retroachievements_organizer/models/user/user_summary_model.dart';
-import 'package:retroachievements_organizer/providers/repositories/user/user_summary_repository_provider.dart';
+import 'package:retroachievements_organizer/providers/repositories/user/user_stats_repository_provider.dart';
 import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/user/user_summary_repository.dart';
+import 'package:retroachievements_organizer/repositories/user/user_stats_repository.dart';
 
 class UserSummaryState {
   final bool isLoading;
@@ -33,11 +33,11 @@ class UserSummaryState {
 }
 
 class UserSummaryNotifier extends StateNotifier<UserSummaryState> {
-  final UserSummaryRepository userSummaryRepository;
+  final UserStatsRepository repository;
   final String username;
   final String apiKey;
 
-  UserSummaryNotifier(this.userSummaryRepository, this.username, this.apiKey) 
+  UserSummaryNotifier(this.repository, this.username, this.apiKey) 
       : super(UserSummaryState()) {
     if (username.isNotEmpty && apiKey.isNotEmpty) {
       loadData();
@@ -56,7 +56,7 @@ class UserSummaryNotifier extends StateNotifier<UserSummaryState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      final userSummary = await userSummaryRepository.getUserSummary(
+      final userSummary = await repository.getUserSummary(
         username, 
         apiKey, 
         useCache: !forceRefresh
@@ -85,7 +85,7 @@ class UserSummaryNotifier extends StateNotifier<UserSummaryState> {
 
 final userSummaryStateProvider = StateNotifierProvider<UserSummaryNotifier, UserSummaryState>((ref) {
   final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(userSummaryRepositoryProvider);
+  final repository = ref.watch(userStatsRepositoryProvider);
   
   return UserSummaryNotifier(
     repository, 

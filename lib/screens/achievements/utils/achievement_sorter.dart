@@ -9,21 +9,34 @@ enum SortOption {
   platformDesc,
 }
 
+enum CompletionFilterStatus {
+  all,
+  completedOnly,
+  hideCompleted,
+}
+
 class AchievementSorter {
   // Apply filters to the games list
   static List<dynamic> applyFilters(
     List<dynamic> games, {
-    required bool showOnlyCompleted,
+    required CompletionFilterStatus completionStatus,
     required Set<String> selectedPlatforms,
   }) {
     List<dynamic> filtered = List.from(games);
     
-    // Filter for completed games if needed
-    if (showOnlyCompleted) {
+    // Filter by completion status
+    if (completionStatus != CompletionFilterStatus.all) {
       filtered = filtered.where((game) {
         final maxPossible = game.maxPossible;
         final numAwarded = game.numAwardedHardcore;
-        return maxPossible > 0 && numAwarded == maxPossible;
+        final isCompleted = maxPossible > 0 && numAwarded == maxPossible;
+        
+        if (completionStatus == CompletionFilterStatus.completedOnly) {
+          return isCompleted;
+        } else {
+          // hideCompleted
+          return !isCompleted;
+        }
       }).toList();
     }
     

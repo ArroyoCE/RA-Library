@@ -33,12 +33,12 @@ class _GamesListState extends ConsumerState<GamesList> {
       itemCount: widget.games.length,
       itemBuilder: (context, index) {
         final game = widget.games[index];
-        return _buildGameCard(game);
+        return _buildDenseGameTile(game);
       },
     );
   }
 
-  Widget _buildGameCard(GameProgress game) {
+  Widget _buildDenseGameTile(GameProgress game) {
     final gameId = game.gameId;
     final title = game.title;
     final iconPath = game.imageIcon;
@@ -53,181 +53,190 @@ class _GamesListState extends ConsumerState<GamesList> {
     
     final progressColor = CompletionColorHelper.getCompletionColor(percentage);
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      color: AppColors.cardBackground,
-      child: InkWell(
-        onTap: () => widget.onGameSelected(game),
-        borderRadius: BorderRadius.circular(4),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Game icon (smaller size)
-                  FutureBuilder<String?>(
-                    future: _getGameIcon(gameId, iconPath),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done && 
-                          snapshot.hasData && 
-                          snapshot.data != null) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: Image.file(
-                            File(snapshot.data!),
-                            width: 56,
-                            height: 56,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                width: 56,
-                                height: 56,
-                                color: AppColors.darkBackground,
-                                child: const Icon(
-                                  Icons.videogame_asset,
-                                  color: AppColors.primary,
-                                ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => widget.onGameSelected(game),
+          borderRadius: BorderRadius.circular(12),
+          hoverColor: Colors.white.withValues(alpha: 0.02),
+          splashColor: AppColors.primary.withValues(alpha: 0.1),
+          highlightColor: Colors.white.withValues(alpha: 0.01),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white.withValues(alpha: 0.03)),
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white.withValues(alpha: 0.015),
+            ),
+            child: Row(
+              children: [
+                // 1. Box Art (Smaller, rounded)
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: _gameIconPaths.containsKey(gameId) && _gameIconPaths[gameId] != null
+                      ? Image.file(
+                          File(_gameIconPaths[gameId]!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+                        )
+                      : FutureBuilder<String?>(
+                          future: _getGameIcon(gameId, iconPath),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.done && 
+                                snapshot.hasData && 
+                                snapshot.data != null) {
+                              return Image.file(
+                                File(snapshot.data!),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
                               );
-                            },
-                          ),
-                        );
-                      } else {
-                        return Container(
-                          width: 56,
-                          height: 56,
-                          color: AppColors.darkBackground,
-                          child: const Icon(
-                            Icons.videogame_asset,
-                            color: AppColors.primary,
-                          ),
-                        );
-                      }
-                    },
+                            } else {
+                              return _buildPlaceholder();
+                            }
+                          },
+                        ),
                   ),
-                  
-                  const SizedBox(width: 16),
-                  
-                  // Game info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            // Game title
-                            Expanded(
-                              child: Text(
-                                title,
-                                style: const TextStyle(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            
-                            // Award indicator (if any)
-                            if (highestAward.isNotEmpty) 
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: _buildAwardBadge(highestAward),
-                              ),
-                          ],
+                ),
+                
+                const SizedBox(width: 16),
+                
+                // 2. Title & Console Info
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
                         ),
-                        
-                        const SizedBox(height: 4),
-                        
-                        // Game metadata row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Achievement count
-                            Text(
-                              'Achievements $numAwarded of $maxPossible',
-                              style: const TextStyle(
-                                color: AppColors.textLight,
-                                fontSize: 12,
-                              ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
                             ),
-                            
-                            // Console badge
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.darkBackground,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                consoleName,
-                                style: const TextStyle(
-                                  color: AppColors.textLight,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        
-                        // Last played date
-                        if (mostRecentDate != null) 
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
                             child: Text(
-                              'Last played: ${_formatDate(mostRecentDate)}',
-                              style: const TextStyle(
-                                color: AppColors.textSubtle,
-                                fontSize: 12,
+                              consoleName,
+                              style: TextStyle(
+                                color: AppColors.primary.withValues(alpha: 0.9),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                      ],
-                    ),
+                          if (mostRecentDate != null) ...[
+                            const SizedBox(width: 8),
+                            Text(
+                              'Last played: ${_formatDate(mostRecentDate)}',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.4),
+                                fontSize: 11,
+                              ),
+                            ),
+                          ]
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              
-              // Progress bar - now in its own row with full width
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 16, // Slightly smaller height
+                ),
+
+                const SizedBox(width: 16),
+
+                // 3. Progress Section (Inline)
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '$numAwarded / $maxPossible',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.6),
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            '${percentage.toStringAsFixed(0)}%',
+                            style: TextStyle(
+                              color: progressColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        height: 6,
                         decoration: BoxDecoration(
-                          color: AppColors.darkBackground,
-                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.black.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(3),
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(3),
                           child: LinearProgressIndicator(
                             value: percentage / 100,
-                            backgroundColor: AppColors.darkBackground,
+                            backgroundColor: Colors.transparent,
                             valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    // Percentage text
-                    Text(
-                      '${percentage.toStringAsFixed(1)}%',
-                      style: TextStyle(
-                        color: progressColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+
+                const SizedBox(width: 16),
+
+                // 4. Award Badge
+                SizedBox(
+                  width: 32,
+                  child: highestAward.isNotEmpty 
+                      ? _buildAwardBadge(highestAward)
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      color: AppColors.darkBackground,
+      child: const Icon(
+        Icons.videogame_asset,
+        color: AppColors.primary,
+        size: 24,
       ),
     );
   }
@@ -257,13 +266,13 @@ class _GamesListState extends ConsumerState<GamesList> {
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: AppColors.darkBackground,
-          borderRadius: BorderRadius.circular(4),
+          color: color.withValues(alpha: 0.1),
+          shape: BoxShape.circle,
         ),
         child: Icon(
           icon,
           color: color,
-          size: 16,
+          size: 20,
         ),
       ),
     );
@@ -295,8 +304,6 @@ class _GamesListState extends ConsumerState<GamesList> {
     
     return localPath;
   }
-  
-  // Get appropriate award badge icon based on highest award
   
   String _formatDate(DateTime date) {
     return DashboardFormatter.formatDate(date);

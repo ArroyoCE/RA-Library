@@ -91,7 +91,8 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
                 final achievement = achievements[index];
                 
                 // Check if we should show this achievement based on filter
-                if (_showOnlyMissable && achievement['type'] != 'missable') {
+                final typeValue = achievement['Type'] ?? achievement['type'] ?? '';
+                if (_showOnlyMissable && typeValue.toString().toLowerCase() != 'missable' && typeValue.toString() != '3') {
                   return const SizedBox.shrink();
                 }
                 
@@ -141,7 +142,8 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
                 return const SizedBox.shrink();
               }
               
-              if (_showOnlyMissable && achievement['type'] != 'missable') {
+              final typeValue = achievement['Type'] ?? achievement['type'] ?? '';
+              if (_showOnlyMissable && typeValue.toString().toLowerCase() != 'missable' && typeValue.toString() != '3') {
                 return const SizedBox.shrink();
               }
               

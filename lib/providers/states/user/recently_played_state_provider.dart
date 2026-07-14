@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retroachievements_organizer/models/user/recently_played_model.dart';
-import 'package:retroachievements_organizer/providers/repositories/user/recently_played_repository_provider.dart';
+import 'package:retroachievements_organizer/providers/repositories/user/user_stats_repository_provider.dart';
 import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/user/recently_played_repository.dart';
+import 'package:retroachievements_organizer/repositories/user/user_stats_repository.dart';
 
 class RecentlyPlayedState {
   final bool isLoading;
@@ -33,12 +33,12 @@ class RecentlyPlayedState {
 }
 
 class RecentlyPlayedNotifier extends StateNotifier<RecentlyPlayedState> {
-  final RecentlyPlayedRepository recentlyPlayedRepository;
+  final UserStatsRepository repository;
   final String username;
   final String apiKey;
   final int count;
 
-  RecentlyPlayedNotifier(this.recentlyPlayedRepository, this.username, this.apiKey, {this.count = 10}) 
+  RecentlyPlayedNotifier(this.repository, this.username, this.apiKey, {this.count = 10}) 
       : super(RecentlyPlayedState()) {
     if (username.isNotEmpty && apiKey.isNotEmpty) {
       loadData();
@@ -57,7 +57,7 @@ class RecentlyPlayedNotifier extends StateNotifier<RecentlyPlayedState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      final recentlyPlayed = await recentlyPlayedRepository.getUserRecentlyPlayedGames(
+      final recentlyPlayed = await repository.getUserRecentlyPlayedGames(
         username, 
         apiKey, 
         count: count,
@@ -87,7 +87,7 @@ class RecentlyPlayedNotifier extends StateNotifier<RecentlyPlayedState> {
 
 final recentlyPlayedStateProvider = StateNotifierProvider<RecentlyPlayedNotifier, RecentlyPlayedState>((ref) {
   final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(recentlyPlayedRepositoryProvider);
+  final repository = ref.watch(userStatsRepositoryProvider);
   
   return RecentlyPlayedNotifier(
     repository, 

@@ -33,7 +33,7 @@ class ProgressBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             boxShadow: [
               BoxShadow(
-                color: progressColor.withOpacity(0.5),
+                color: progressColor.withValues(alpha: 0.5),
                 blurRadius: 4,
                 offset: const Offset(0, 0),
               ),

@@ -8,13 +8,12 @@ import 'package:go_router/go_router.dart';
 import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
 import 'package:retroachievements_organizer/screens/about_screen.dart';
 import 'package:retroachievements_organizer/screens/achievements/achievements_screen.dart';
-import 'package:retroachievements_organizer/screens/auth/forgot_screen.dart';
 import 'package:retroachievements_organizer/screens/auth/login_screen.dart';
-import 'package:retroachievements_organizer/screens/auth/register_screen.dart';
 import 'package:retroachievements_organizer/screens/consoles/consoles_screen.dart';
 import 'package:retroachievements_organizer/screens/dashboard/dashboard_screen.dart';
 import 'package:retroachievements_organizer/screens/game_data/game_data_screen.dart';
 import 'package:retroachievements_organizer/screens/games/games_screen.dart';
+import 'package:retroachievements_organizer/screens/hash_check/hash_check_screen.dart';
 import 'package:retroachievements_organizer/screens/main_app_screen.dart';
 import 'package:retroachievements_organizer/screens/settings_screen.dart';
 import 'package:retroachievements_organizer/screens/splash_screen.dart';
@@ -26,7 +25,31 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _dashboardNavigatorKey = GlobalKey<NavigatorState>();
 final _gamesNavigatorKey = GlobalKey<NavigatorState>();
 final _achievementsNavigatorKey = GlobalKey<NavigatorState>();
+final _hashCheckNavigatorKey = GlobalKey<NavigatorState>();
 final _settingsNavigatorKey = GlobalKey<NavigatorState>();
+
+GoRoute _buildGameDetailRoute({required String name, required String navigationSource}) {
+  return GoRoute(
+    path: 'game/:gameId',
+    name: name,
+    pageBuilder: (context, state) {
+      final gameId = state.pathParameters['gameId'] ?? '0';
+      final title = state.uri.queryParameters['title'] ?? 'Game';
+      final iconPath = state.uri.queryParameters['icon'] ?? '';
+      final consoleName = state.uri.queryParameters['console'] ?? '';
+      
+      return NoTransitionPage(
+        child: GameDataScreen(
+          gameId: gameId,
+          title: title,
+          iconPath: iconPath,
+          consoleName: consoleName,
+          navigationSource: navigationSource,
+        ),
+      );
+    },
+  );
+}
 
 // Provider that exposes the GoRouter instance
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -43,8 +66,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final location = state.matchedLocation;
       
       final isLogging = location == '/login';
-      final isRegistering = location == '/register';
-      final isForgotPassword = location == '/forgot-password';
       final isSplash = location == '/splash';
       final isAbout = location == '/about';
       
@@ -56,14 +77,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // If not logged in and not on an auth page, redirect to login
       if (!isLoggedIn && 
           !isLogging && 
-          !isRegistering && 
-          !isForgotPassword &&
           !isAbout) {
         return '/login';
       }
       
       // If logged in and on an auth page, redirect to dashboard
-      if (isLoggedIn && (isLogging || isRegistering || isForgotPassword)) {
+      if (isLoggedIn && isLogging) {
         return '/dashboard';
       }
       
@@ -86,14 +105,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/register',
-        builder: (context, state) => const RegisterScreen(),
-      ),
-      GoRoute(
-        path: '/forgot-password',
-        builder: (context, state) => const ForgotPasswordScreen(),
       ),
       
       // About screen (accessible without login)
@@ -120,25 +131,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 ),
                 routes: [
                   // Game data screen accessible from dashboard
-                  GoRoute(
-                    path: 'game/:gameId',
+                  _buildGameDetailRoute(
                     name: 'dashboard_game_details',
-                    pageBuilder: (context, state) {
-                      final gameId = state.pathParameters['gameId'] ?? '0';
-                      final title = state.uri.queryParameters['title'] ?? 'Game';
-                      final iconPath = state.uri.queryParameters['icon'] ?? '';
-                      final consoleName = state.uri.queryParameters['console'] ?? '';
-                      
-                      return NoTransitionPage(
-                        child: GameDataScreen(
-                          gameId: gameId,
-                          title: title,
-                          iconPath: iconPath,
-                          consoleName: consoleName,
-                          navigationSource: 'dashboard',
-                        ),
-                      );
-                    },
+                    navigationSource: 'dashboard',
                   ),
                 ],
               ),
@@ -173,25 +168,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     },
                     routes: [
                       // Game data screen as child of games/:consoleId
-                      GoRoute(
-                        path: 'game/:gameId',
+                      _buildGameDetailRoute(
                         name: 'game_details',
-                        pageBuilder: (context, state) {
-                          final gameId = state.pathParameters['gameId'] ?? '0';
-                          final title = state.uri.queryParameters['title'] ?? 'Game';
-                          final iconPath = state.uri.queryParameters['icon'] ?? '';
-                          final consoleName = state.uri.queryParameters['console'] ?? '';
-                          
-                          return NoTransitionPage(
-                            child: GameDataScreen(
-                              gameId: gameId,
-                              title: title,
-                              iconPath: iconPath,
-                              consoleName: consoleName,
-                              navigationSource: 'games',
-                            ),
-                          );
-                        },
+                        navigationSource: 'games',
                       ),
                     ],
                   ),
@@ -212,25 +191,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 ),
                 routes: [
                   // Game data screen accessible from achievements
-                  GoRoute(
-                    path: 'game/:gameId',
+                  _buildGameDetailRoute(
                     name: 'achievements_game_details',
-                    pageBuilder: (context, state) {
-                      final gameId = state.pathParameters['gameId'] ?? '0';
-                      final title = state.uri.queryParameters['title'] ?? 'Game';
-                      final iconPath = state.uri.queryParameters['icon'] ?? '';
-                      final consoleName = state.uri.queryParameters['console'] ?? '';
-                      
-                      return NoTransitionPage(
-                        child: GameDataScreen(
-                          gameId: gameId,
-                          title: title,
-                          iconPath: iconPath,
-                          consoleName: consoleName,
-                          navigationSource: 'achievements',
-                        ),
-                      );
-                    },
+                    navigationSource: 'achievements',
+                  ),
+                ],
+              ),
+            ],
+          ),
+          
+          // Hash Check branch
+          StatefulShellBranch(
+            navigatorKey: _hashCheckNavigatorKey,
+            routes: [
+              GoRoute(
+                path: '/hash-check',
+                name: 'hash_check',
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: HashCheckScreen(child: HashCheckContent()),
+                ),
+                routes: [
+                  _buildGameDetailRoute(
+                    name: 'hash_check_game_details',
+                    navigationSource: 'hash_check',
                   ),
                 ],
               ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:retroachievements_organizer/models/consoles/all_game_hash.dart';
 import 'package:retroachievements_organizer/models/local/hash_match_model.dart';
 import 'package:retroachievements_organizer/screens/games/widgets/game_grid_item.dart';
+import 'package:retroachievements_organizer/widgets/generic_grid_display.dart';
 
 class GamesGrid extends StatelessWidget {
   final List<GameHash> games;
@@ -21,21 +22,14 @@ class GamesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(8),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 8,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.7,
-      ),
-      itemCount: games.length,
-      itemBuilder: (context, index) {
-        final game = games[index];
-        
-        // Get match status for this game if available
+    return GenericGridDisplay<GameHash>(
+      items: games,
+      crossAxisCount: 10,
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      childAspectRatio: 0.7,
+      itemBuilder: (context, game, index) {
         final matchStatus = matchStatuses != null ? matchStatuses![game.id] : null;
-        
         return GameGridItem(
           game: game,
           onTap: () => onGameSelected(game),

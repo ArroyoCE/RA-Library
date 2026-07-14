@@ -11,7 +11,6 @@ import 'package:retroachievements_organizer/providers/states/user/user_summary_s
 import 'package:retroachievements_organizer/screens/dashboard/components/awards_carousel.dart';
 import 'package:retroachievements_organizer/screens/dashboard/components/completion_progress.dart';
 import 'package:retroachievements_organizer/screens/dashboard/components/dashboard_header.dart';
-import 'package:retroachievements_organizer/screens/dashboard/components/global_stats_summary.dart';
 import 'package:retroachievements_organizer/screens/dashboard/components/recently_played_games.dart';
 import 'package:retroachievements_organizer/screens/dashboard/components/user_profile_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -99,15 +98,8 @@ class _DashboardContentState extends ConsumerState<DashboardContent> with Automa
                     UserProfileCard(
                       userState: userState, 
                       userSummary: userSummaryState.data,
+                      userAwards: userAwardsState.data,
                     ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Global User Stats Summary
-                  GlobalStatsSummary(
-                    userSummary: userSummaryState.data, 
-                    userAwards: userAwardsState.data,
-                  ),
                   
                   const SizedBox(height: 24),
                   

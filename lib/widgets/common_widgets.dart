@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:window_manager/window_manager.dart';
 
 // Custom AppBar
 class RAAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -14,26 +15,37 @@ class RAAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: AppColors.appBarBackground,
-      title: Row(
-        children: [
-          Image.asset(
-            'images/ra-icon.png',
-            height: 24,
-            width: 24,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              color: AppColors.textLight,
-              fontWeight: FontWeight.bold,
+    return DragToMoveArea(
+      child: AppBar(
+        backgroundColor: AppColors.appBarBackground,
+        title: Row(
+          children: [
+            Image.asset(
+              'images/ra-icon.png',
+              height: 24,
+              width: 24,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                color: AppColors.textLight,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          if (actions != null) ...actions!,
+          const SizedBox(
+            width: 138,
+            child: WindowCaption(
+              brightness: Brightness.dark,
+              backgroundColor: Colors.transparent,
             ),
           ),
         ],
       ),
-      actions: actions,
     );
   }
 

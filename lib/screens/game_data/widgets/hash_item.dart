@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HashItem extends StatelessWidget {
   final Map<String, dynamic> hash;
@@ -143,14 +144,18 @@ class HashItem extends StatelessWidget {
     );
   }
   
-  // Method to launch URL - in a real app, you'd implement this using url_launcher
-  void _launchURL(BuildContext context, String url) {
-    // This is a placeholder. In a real app, you'd use the url_launcher package
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Opening URL: $url'),
-        backgroundColor: AppColors.info,
-      ),
-    );
+  // Method to launch URL - using url_launcher
+  Future<void> _launchURL(BuildContext context, String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not launch $urlString'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 }

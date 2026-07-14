@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retroachievements_organizer/constants/constants.dart';
 import 'package:retroachievements_organizer/models/consoles/all_console_model.dart';
-import 'package:retroachievements_organizer/models/local/hash_model.dart';
 import 'package:retroachievements_organizer/providers/repositories/local_data_repository_provider.dart';
+import 'package:retroachievements_organizer/providers/repositories/consoles/all_games_hashes_repository_provider.dart';
+import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
 import 'package:retroachievements_organizer/providers/states/consoles/all_consoles_state_provider.dart';
-import 'package:retroachievements_organizer/providers/states/consoles/all_games_hashes_state_provider.dart';
+import 'package:retroachievements_organizer/providers/states/consoles/consoles_updating_state_provider.dart';
 import 'package:retroachievements_organizer/providers/states/local_data_state_provider.dart';
+import 'package:retroachievements_organizer/providers/states/settings_state_provider.dart';
+import 'package:retroachievements_organizer/models/consoles/all_game_hash.dart';
 import 'package:retroachievements_organizer/screens/consoles/components/consoles_filters.dart';
 import 'package:retroachievements_organizer/screens/consoles/components/consoles_grid.dart';
 import 'package:retroachievements_organizer/screens/consoles/components/consoles_header.dart';
@@ -47,12 +50,6 @@ class _GamesContentState extends ConsumerState<GamesContent> with AutomaticKeepA
   final Map<int, Map<String, dynamic>> _libraryStats = {};
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
-  bool _showOnlyAvailable = true;
-
-
-
-  
-
 
   @override
 void initState() {
@@ -88,14 +85,6 @@ void initState() {
           _isGridView = savedIsGridView;
         });
       }
-      
-      // Load filter preference
-      final savedShowOnlyAvailable = prefs.getBool('consoles_show_only_available');
-      if (savedShowOnlyAvailable != null) {
-        setState(() {
-          _showOnlyAvailable = savedShowOnlyAvailable;
-        });
-      }
     } catch (e) {
       debugPrint('Error loading saved preferences: $e');
     }
@@ -124,7 +113,6 @@ void initState() {
           'matchedHashes': hashStats?['matchedHashes'] ?? 0,
           'totalGames': cachedTotals['totalGames'] ?? 0,
           'totalHashes': cachedTotals['totalHashes'] ?? 0,
-          'hashMethod': ref.read(consoleHashMethodProvider(consoleId)).name,
           'lastUpdated': DateTime.now().toIso8601String(),
         };
         
@@ -154,27 +142,11 @@ void initState() {
     }
   }
 
-  Future<void> _saveFilterPreference() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('consoles_show_only_available', _showOnlyAvailable);
-    } catch (e) {
-      debugPrint('Error saving filter preference: $e');
-    }
-  }
-
   void _toggleView() {
     setState(() {
       _isGridView = !_isGridView;
     });
     _saveViewPreference();
-  }
-
-  void _toggleAvailableFilter(bool value) {
-    setState(() {
-      _showOnlyAvailable = value;
-    });
-    _saveFilterPreference();
   }
 
   // Preload game data for all consoles
@@ -186,6 +158,13 @@ void initState() {
     debugPrint('Consoles not loaded yet, skipping preload');
     return;
   }
+  
+  // Lock UI and navigation
+  Future.microtask(() {
+    if (mounted) ref.read(consolesUpdatingStateProvider.notifier).state = true;
+  });
+  
+  try {
   
   // Get supported console IDs
   final supportedConsoleIds = ref.read(supportedConsoleIdsProvider);
@@ -210,13 +189,19 @@ void initState() {
           
           // If we don't have cached totals, or they're outdated, fetch from API
           if (cachedTotals == null) {
-            // Load game list to get total counts
-            await ref.read(gamesHashesStateProvider.notifier).loadGameList(consoleId.toString());
-            final gamesState = ref.read(gamesHashesStateProvider);
+            // Load game list directly from repository to avoid race condition
+            final repository = ref.read(allGamesHashesRepositoryProvider);
+            final apiKey = ref.read(authStateProvider).apiKey ?? '';
+            final gamesListRaw = await repository.getGameList(consoleId.toString(), apiKey, useCache: true);
             
-            if (gamesState.data != null) {
-              totalGames = gamesState.data!.length;
-              totalHashes = gamesState.data!.fold<int>(
+            if (gamesListRaw != null) {
+              final settings = ref.read(settingsProvider);
+              final gamesList = gamesListRaw
+                  .map((item) => GameHash.fromJson(item))
+                  .where((game) => !settings.shouldIgnoreGame(game.title))
+                  .toList();
+              totalGames = gamesList.length;
+              totalHashes = gamesList.fold<int>(
                 0, (sum, game) => sum + game.hashes.length
               );
               
@@ -238,7 +223,6 @@ void initState() {
             'matchedHashes': hashStats?['matchedHashes'] ?? 0,
             'totalGames': totalGames,
             'totalHashes': totalHashes,
-            'hashMethod': ref.read(consoleHashMethodProvider(consoleId)).name,
             'lastUpdated': DateTime.now().toIso8601String(),
           };
           
@@ -262,16 +246,27 @@ void initState() {
       await Future.delayed(const Duration(milliseconds: 200));
     }
   }
+  } finally {
+    if (mounted) {
+      ref.read(consolesUpdatingStateProvider.notifier).state = false;
+    }
+  }
 }
 
 
 
 void _refreshData() async {
-  // First refresh console data from API
-  await ref.read(consolesStateProvider.notifier).loadData(forceRefresh: true);
-  
-  // Get supported console IDs
-  final supportedConsoleIds = ref.read(supportedConsoleIdsProvider);
+  // Lock UI and navigation
+  Future.microtask(() {
+    if (mounted) ref.read(consolesUpdatingStateProvider.notifier).state = true;
+  });
+
+  try {
+    // First refresh console data from API
+    await ref.read(consolesStateProvider.notifier).loadData(forceRefresh: true);
+    
+    // Get supported console IDs
+    final supportedConsoleIds = ref.read(supportedConsoleIdsProvider);
   
   // Process each console to refresh totals
   for (final consoleId in supportedConsoleIds) {
@@ -279,13 +274,19 @@ void _refreshData() async {
       // Get local data repository
       final localDataRepository = ref.read(localDataRepositoryProvider);
       
-      // Load game list to get fresh total counts
-      await ref.read(gamesHashesStateProvider.notifier).loadGameList(consoleId.toString(), forceRefresh: true);
-      final gamesState = ref.read(gamesHashesStateProvider);
+      // Load game list directly from repository to avoid race condition
+      final repository = ref.read(allGamesHashesRepositoryProvider);
+      final apiKey = ref.read(authStateProvider).apiKey ?? '';
+      final gamesListRaw = await repository.getGameList(consoleId.toString(), apiKey, useCache: false);
       
-      if (gamesState.data != null) {
-        final totalGames = gamesState.data!.length;
-        final totalHashes = gamesState.data!.fold<int>(
+      if (gamesListRaw != null) {
+        final settings = ref.read(settingsProvider);
+        final gamesList = gamesListRaw
+            .map((item) => GameHash.fromJson(item))
+            .where((game) => !settings.shouldIgnoreGame(game.title))
+            .toList();
+        final totalGames = gamesList.length;
+        final totalHashes = gamesList.fold<int>(
           0, (sum, game) => sum + game.hashes.length
         );
         
@@ -301,7 +302,6 @@ void _refreshData() async {
           'matchedHashes': hashStats?['matchedHashes'] ?? 0,
           'totalGames': totalGames,
           'totalHashes': totalHashes,
-          'hashMethod': ref.read(consoleHashMethodProvider(consoleId)).name,
           'lastUpdated': DateTime.now().toIso8601String(),
         };
         
@@ -322,6 +322,11 @@ void _refreshData() async {
   
   // Refresh all stats from storage
   await ref.read(consoleStatsNotifierProvider.notifier).refreshAllStats();
+  } finally {
+    if (mounted) {
+      ref.read(consolesUpdatingStateProvider.notifier).state = false;
+    }
+  }
 }
 
   // Filter consoles based on search and availability
@@ -329,14 +334,9 @@ void _refreshData() async {
     final consoleState = ref.read(consolesStateProvider);
     if (consoleState.data == null) return [];
     
-    // First filter by supported consoles if needed
-    List<Console> filteredList = consoleState.data!;
-    
-    if (_showOnlyAvailable) {
-      final supportedIds = ref.read(supportedConsoleIdsProvider);
-      filteredList = filteredList.where((console) => 
-        supportedIds.contains(console.id)).toList();
-    }
+    // First filter out "Standalone"
+    List<Console> filteredList = consoleState.data!.where((console) => 
+        console.name.toLowerCase() != 'standalone').toList();
     
     // Then filter by search query
     if (_searchQuery.isNotEmpty) {
@@ -367,56 +367,83 @@ Widget build(BuildContext context) {
   
   final consoleState = ref.watch(consolesStateProvider);
   final filteredConsoles = _getFilteredConsoles();
-    
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with title and actions
-          ConsolesHeader(
-            onViewToggle: _toggleView,
-            onRefresh: _refreshData,
-            isGridView: _isGridView,
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Search and filters
-          ConsolesFilters(
-            searchController: _searchController,
-            onSearchChanged: (value) {
-              setState(() {
-                _searchQuery = value;
-              });
-            },
-            showOnlyAvailable: _showOnlyAvailable,
-            onFilterChanged: _toggleAvailableFilter,
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Console count
-          Text(
-            'Showing ${filteredConsoles.length} consoles',
-            style: const TextStyle(
-              color: AppColors.info,
-              fontSize: 14,
+  final isUpdating = ref.watch(consolesUpdatingStateProvider);
+
+  return Padding(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with title and actions
+        ConsolesHeader(
+          onViewToggle: _toggleView,
+          onRefresh: _refreshData,
+          isGridView: _isGridView,
+          isUpdating: isUpdating,
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Search and filters
+        ConsolesFilters(
+          searchController: _searchController,
+          onSearchChanged: (value) {
+            setState(() {
+              _searchQuery = value;
+            });
+          },
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Console count and updating progress
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Showing ${filteredConsoles.length} consoles',
+              style: const TextStyle(
+                color: AppColors.info,
+                fontSize: 14,
+              ),
             ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Loading indicator or consoles grid/list
-          consoleState.isLoading
-              ? const Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
+            if (isUpdating)
+              const Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    ),
                   ),
-                )
-              : consoleState.data == null || consoleState.data!.isEmpty
-                  ? const Expanded(
-                      child: Center(
+                  SizedBox(width: 12),
+                  Text(
+                    'Syncing games and hashes...',
+                    style: TextStyle(
+                      color: AppColors.primary, 
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+        
+        const SizedBox(height: 12),
+        
+        // Loading indicator or consoles grid/list
+        Expanded(
+          child: AbsorbPointer(
+            absorbing: isUpdating,
+            child: consoleState.isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  )
+                : consoleState.data == null || consoleState.data!.isEmpty
+                    ? const Center(
                         child: Text(
                           'No consoles found',
                           style: TextStyle(
@@ -424,24 +451,23 @@ Widget build(BuildContext context) {
                             fontSize: 18,
                           ),
                         ),
-                      ),
-                    )
-                  : Expanded(
-                      child: _isGridView
-                          ? ConsolesGrid(
-                              consoles: filteredConsoles,
-                              libraryStats: _libraryStats,
-                            )
-                          : ConsolesList(
-                              consoles: filteredConsoles,
-                              libraryStats: _libraryStats,
-                            ),
-                    ),
-        ],
-      ),
-    );
-  }
-  
-  @override
-  bool get wantKeepAlive => true;
+                      )
+                    : _isGridView
+                        ? ConsolesGrid(
+                            consoles: filteredConsoles,
+                            libraryStats: _libraryStats,
+                          )
+                        : ConsolesList(
+                            consoles: filteredConsoles,
+                            libraryStats: _libraryStats,
+                          ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@override
+bool get wantKeepAlive => true;
 }

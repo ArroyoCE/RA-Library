@@ -44,7 +44,7 @@ class AwardItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.darkBackground,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: awardColor.withOpacity(0.5)),
+        border: Border.all(color: awardColor.withValues(alpha: 0.5)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -55,7 +55,7 @@ class AwardItem extends StatelessWidget {
               height: 60,
               width: 60,
               decoration: BoxDecoration(
-                color: awardColor.withOpacity(0.2),
+                color: awardColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(30),
               ),
               child: ClipRRect(

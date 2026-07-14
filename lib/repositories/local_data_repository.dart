@@ -1,15 +1,13 @@
 // lib/repositories/local_data_repository.dart
 
 import 'package:retroachievements_organizer/models/consoles/all_console_model.dart';
-import 'package:retroachievements_organizer/models/local/hash_model.dart';
 
 abstract class LocalDataRepository {
   Future<List<Console>> getLocalConsolesFolders();
-  HashMethod getHashMethodForConsole(int consoleId);
   bool isConsoleSupported(int consoleId);
   List<int> getSupportedConsoleIds();
 
-  Future<Map<String, String>> hashFilesInFolders(int consoleId, List<String> folders);
+  Future<Map<String, String>> hashFilesInFolders(int consoleId, List<String> folders, {bool skipExisting = false, Function(int current, int total)? progressCallback});
   Future<void> saveLocalHashes(int consoleId, Map<String, String> hashes);
   Future<Map<String, String>> getLocalHashes(int consoleId);
   List<String> getFileExtensionsForConsole(int consoleId);

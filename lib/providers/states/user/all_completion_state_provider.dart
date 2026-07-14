@@ -2,9 +2,9 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retroachievements_organizer/models/user/all_completion_model.dart';
-import 'package:retroachievements_organizer/providers/repositories/user/all_completion_repository_provider.dart';
+import 'package:retroachievements_organizer/providers/repositories/user/user_stats_repository_provider.dart';
 import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/user/all_completion_repository.dart';
+import 'package:retroachievements_organizer/repositories/user/user_stats_repository.dart';
 
 class CompletionProgressState {
   final bool isLoading;
@@ -35,11 +35,11 @@ class CompletionProgressState {
 }
 
 class CompletionProgressNotifier extends StateNotifier<CompletionProgressState> {
-  final AllCompletionRepository allCompletionRepository;
+  final UserStatsRepository repository;
   final String username;
   final String apiKey;
 
-  CompletionProgressNotifier(this.allCompletionRepository, this.username, this.apiKey) 
+  CompletionProgressNotifier(this.repository, this.username, this.apiKey) 
       : super(CompletionProgressState()) {
     if (username.isNotEmpty && apiKey.isNotEmpty) {
       loadData();
@@ -58,7 +58,7 @@ class CompletionProgressNotifier extends StateNotifier<CompletionProgressState> 
     state = state.copyWith(isLoading: true);
 
     try {
-      final completionProgress = await allCompletionRepository.getUserCompletionProgress(
+      final completionProgress = await repository.getUserCompletionProgress(
         username, 
         apiKey, 
         useCache: !forceRefresh
@@ -87,7 +87,7 @@ class CompletionProgressNotifier extends StateNotifier<CompletionProgressState> 
 
 final completionProgressStateProvider = StateNotifierProvider<CompletionProgressNotifier, CompletionProgressState>((ref) {
   final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(allCompletionRepositoryProvider);
+  final repository = ref.watch(userStatsRepositoryProvider);
   
   return CompletionProgressNotifier(
     repository, 

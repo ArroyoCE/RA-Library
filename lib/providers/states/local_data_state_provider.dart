@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/models/local/hash_model.dart';
 import 'package:retroachievements_organizer/providers/repositories/local_data_repository_provider.dart';
 import 'package:retroachievements_organizer/repositories/local_data_repository.dart';
 
@@ -16,12 +15,6 @@ final consoleFoldersProvider = FutureProvider<Map<int, List<String>>>((ref) asyn
 final isConsoleSupportedProvider = Provider.family<bool, int>((ref, consoleId) {
   final repository = ref.watch(localDataRepositoryProvider);
   return repository.isConsoleSupported(consoleId);
-});
-
-// Provider for getting hash method for a console
-final consoleHashMethodProvider = Provider.family<HashMethod, int>((ref, consoleId) {
-  final repository = ref.watch(localDataRepositoryProvider);
-  return repository.getHashMethodForConsole(consoleId);
 });
 
 // Provider for getting all supported console IDs

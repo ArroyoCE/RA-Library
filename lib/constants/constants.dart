@@ -20,7 +20,7 @@ class AppColors {
 // App string constants
 class AppStrings {
   // App info
-  static const String appName = 'RetroAchievements';
+  static const String appName = 'RetroAchievements Library';
   
   // Auth screens
   static const String login = 'Login';
@@ -35,10 +35,11 @@ class AppStrings {
   
   // Main app screens
   static const String dashboard = 'Dashboard';
-  static const String myGames = 'My Games';
+  static const String myGames = 'Consoles';
   static const String myAchievements = 'My Achievements';
   static const String settings = 'Settings';
   static const String about = 'About';
+  static const String hashCheck = 'Hash Check';
   static const String logout = 'Logout';
 
   static const String selectConsole = 'Select a console to view games';

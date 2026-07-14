@@ -20,8 +20,14 @@ class Console {
       id: json['ID'] ?? 0,
       name: json['Name'] ?? '',
       iconUrl: json['IconURL'] ?? '',
-      active: json['Active'] ?? false,
-      isGameSystem: json['IsGameSystem'] ?? false,
+      active:
+          json['Active'] == 1 ||
+          json['Active'] == true ||
+          json['Active'] == '1',
+      isGameSystem:
+          json['IsGameSystem'] == 1 ||
+          json['IsGameSystem'] == true ||
+          json['IsGameSystem'] == '1',
     );
   }
 
@@ -33,5 +39,19 @@ class Console {
       'Active': active,
       'IsGameSystem': isGameSystem,
     };
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+  
+    return other is Console &&
+      other.id == id &&
+      other.name == name;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^ name.hashCode;
   }
 }

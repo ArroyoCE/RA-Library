@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retroachievements_organizer/constants/constants.dart';
 import 'package:retroachievements_organizer/models/consoles/all_console_model.dart';
-import 'package:retroachievements_organizer/providers/states/local_data_state_provider.dart';
+import 'package:retroachievements_organizer/widgets/generic_grid_display.dart';
 
 class ConsolesGrid extends ConsumerWidget {
   final List<Console> consoles;
@@ -19,25 +19,20 @@ class ConsolesGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(8),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 6,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.75,
-      ),
-      itemCount: consoles.length,
-      itemBuilder: (context, index) {
-        final console = consoles[index];
-        final isSupported = ref.read(isConsoleSupportedProvider(console.id));
-        ref.read(consoleHashMethodProvider(console.id));
+    return GenericGridDisplay<Console>(
+      items: consoles,
+      crossAxisCount: 6,
+      crossAxisSpacing: 5,
+      mainAxisSpacing: 5,
+      childAspectRatio: 1.8,
+      itemBuilder: (context, console, index) {
+        // Force all consoles to be supported
+        const isSupported = true;
         
         return _buildConsoleCard(
           context: context,
           console: console,
           isSupported: isSupported,
-          
           libraryStats: libraryStats,
         );
       },
@@ -68,67 +63,63 @@ class ConsolesGrid extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                // Console icon
-                Image.network(
-                  console.iconUrl,
-                  height: 80,
-                  width: 80,
-                  fit: BoxFit.contain,
-                  color: isSupported ? null : Colors.grey.withOpacity(0.5),
-                  colorBlendMode: isSupported ? null : BlendMode.saturation,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
-                      Icons.videogame_asset,
-                      color: AppColors.primary,
-                      size: 80,
-                    );
-                  },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const SizedBox(
-                      height: 80,
-                      width: 80,
-                      child: Center(
+            Expanded(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Console icon
+                  Image.network(
+                    console.iconUrl,
+                    fit: BoxFit.contain,
+                    color: isSupported ? null : Colors.grey.withValues(alpha: 0.5),
+                    colorBlendMode: isSupported ? null : BlendMode.saturation,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.videogame_asset,
+                        color: AppColors.primary,
+                        size: 40,
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                           strokeWidth: 2,
                         ),
-                      ),
-                    );
-                  },
-                ),
-                if (!isSupported)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      'Coming Soon',
-                      style: TextStyle(
-                        color: AppColors.textLight,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                      );
+                    },
                   ),
-              ],
+                  if (!isSupported)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        'Soon',
+                        style: TextStyle(
+                          color: AppColors.textLight,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8), // Reduced spacing
+            const SizedBox(height: 4), // Reduced spacing
             
             Text(
               console.name,
               style: TextStyle(
                 color: isSupported ? AppColors.primary : AppColors.textSubtle,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 12,
               ),
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             
@@ -136,23 +127,26 @@ class ConsolesGrid extends ConsumerWidget {
             if (isSupported)
   Column(
     children: [
-      const SizedBox(height: 4), // Reduced spacing
+      const SizedBox(height: 2), // Reduced spacing
       Text(
-        'Games: $matchedGames/$totalGames (${(totalGames > 0 ? matchedGames / totalGames * 100 : 0).toStringAsFixed(1)}%)',
+        'Games: $matchedGames/$totalGames',
         style: const TextStyle(
           color: AppColors.textLight,
-          fontSize: 12,
+          fontSize: 10,
         ),
         textAlign: TextAlign.center,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
-      const SizedBox(height: 2),
       Text(
-        'Hashes: $matchedHashes/$totalHashes (${(totalHashes > 0 ? matchedHashes / totalHashes * 100 : 0).toStringAsFixed(1)}%)',
+        'Hashes: $matchedHashes/$totalHashes',
         style: const TextStyle(
           color: AppColors.textLight,
-          fontSize: 12,
+          fontSize: 10,
         ),
         textAlign: TextAlign.center,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     ],
   ),

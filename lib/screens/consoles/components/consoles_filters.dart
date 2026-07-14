@@ -6,15 +6,15 @@ import 'package:retroachievements_organizer/constants/constants.dart';
 class ConsolesFilters extends StatelessWidget {
   final TextEditingController searchController;
   final Function(String) onSearchChanged;
-  final bool showOnlyAvailable;
-  final Function(bool) onFilterChanged;
+  
+  
 
   const ConsolesFilters({
     super.key,
     required this.searchController,
     required this.onSearchChanged,
-    required this.showOnlyAvailable,
-    required this.onFilterChanged,
+    
+    
   });
 
   @override
@@ -53,33 +53,6 @@ class ConsolesFilters extends StatelessWidget {
           onChanged: onSearchChanged,
         ),
         
-        const SizedBox(height: 16),
-        
-        // Filter option
-        Row(
-          children: [
-            Checkbox(
-              value: showOnlyAvailable,
-              onChanged: (value) => onFilterChanged(value ?? false),
-              fillColor: WidgetStateProperty.resolveWith<Color>(
-                (Set<WidgetState> states) {
-                  if (states.contains(WidgetState.selected)) {
-                    return AppColors.primary;
-                  }
-                  return Colors.grey;
-                },
-              ),
-              checkColor: AppColors.darkBackground,
-            ),
-            const Text(
-              'Show only supported consoles',
-              style: TextStyle(
-                color: AppColors.textLight,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }

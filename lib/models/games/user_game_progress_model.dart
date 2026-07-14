@@ -78,7 +78,7 @@ class UserGameProgress {
       genre: json['Genre'] ?? '',
       released: json['Released'] ?? '',
       releasedAtGranularity: json['ReleasedAtGranularity'] ?? '',
-      isFinal: json['IsFinal'] ?? false,
+      isFinal: json['IsFinal'] == 1 || json['IsFinal'] == true || json['IsFinal'] == '1',
       richPresencePatch: json['RichPresencePatch'],
       guideURL: json['GuideURL'],
       consoleName: json['ConsoleName'] ?? '',

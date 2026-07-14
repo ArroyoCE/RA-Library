@@ -5,8 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retroachievements_organizer/constants/constants.dart';
 import 'package:retroachievements_organizer/models/consoles/all_console_model.dart';
-import 'package:retroachievements_organizer/models/local/hash_model.dart';
-import 'package:retroachievements_organizer/providers/states/local_data_state_provider.dart';
 import 'package:retroachievements_organizer/screens/consoles/utils/consoles_helper.dart';
 import 'package:retroachievements_organizer/screens/dashboard/widgets/progress_bar.dart';
 
@@ -27,14 +25,13 @@ class ConsolesList extends ConsumerWidget {
       itemCount: consoles.length,
       itemBuilder: (context, index) {
         final console = consoles[index];
-        final isSupported = ref.read(isConsoleSupportedProvider(console.id));
-        final hashMethod = ref.read(consoleHashMethodProvider(console.id));
+        // Force all consoles to be supported
+        const isSupported = true;
         
         return _buildConsoleListItem(
           context: context,
           console: console,
           isSupported: isSupported,
-          hashMethod: hashMethod,
           libraryStats: libraryStats,
         );
       },
@@ -45,7 +42,6 @@ class ConsolesList extends ConsumerWidget {
     required BuildContext context,
     required Console console,
     required bool isSupported,
-    required HashMethod hashMethod,
     required Map<int, Map<String, dynamic>> libraryStats,
   }) {
     final hasLibraryStats = libraryStats.containsKey(console.id);
@@ -83,7 +79,7 @@ class ConsolesList extends ConsumerWidget {
                       height: 60,
                       width: 60,
                       fit: BoxFit.contain,
-                      color: isSupported ? null : Colors.grey.withOpacity(0.5),
+                      color: isSupported ? null : Colors.grey.withValues(alpha: 0.5),
                       colorBlendMode: isSupported ? null : BlendMode.saturation,
                       errorBuilder: (context, error, stackTrace) {
                         return const Icon(
@@ -107,7 +103,7 @@ class ConsolesList extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.7),
+                        color: Colors.black.withValues(alpha: 0.7),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Text(

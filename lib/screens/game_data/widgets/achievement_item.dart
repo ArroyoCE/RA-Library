@@ -25,10 +25,10 @@ class AchievementItem extends StatelessWidget {
     final int numAwarded = achievement['NumAwarded'] ?? 0;
     final int numAwardedHardcore = achievement['NumAwardedHardcore'] ?? 0;
     final String badgeName = achievement['BadgeName'] ?? '';
-    final String type = achievement['type'] ?? '';
+    final String type = (achievement['Type'] ?? achievement['type'] ?? '').toString();
     
     return Card(
-      color: isUnlocked ? AppColors.success.withOpacity(0.2) : AppColors.cardBackground,
+      color: isUnlocked ? AppColors.success.withValues(alpha: 0.2) : AppColors.cardBackground,
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(12),

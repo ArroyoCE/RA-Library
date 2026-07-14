@@ -5,17 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:retroachievements_organizer/constants/constants.dart';
 import 'package:retroachievements_organizer/models/user_state.dart';
 import 'package:retroachievements_organizer/models/user/user_summary_model.dart';
+import 'package:retroachievements_organizer/models/user/user_awards_model.dart';
 import 'package:retroachievements_organizer/screens/dashboard/utils/dashboard_formatter.dart';
 import 'package:retroachievements_organizer/screens/dashboard/widgets/stat_item.dart';
 
 class UserProfileCard extends StatelessWidget {
   final UserState userState;
   final UserSummary? userSummary;
+  final UserAwards? userAwards;
 
   const UserProfileCard({
     super.key,
     required this.userState,
     required this.userSummary,
+    required this.userAwards,
   });
 
   @override
@@ -84,33 +87,6 @@ class UserProfileCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      
-                      // Online status indicator
-                      if (userSummary != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: userSummary?.status == 'Online' 
-                                ? Colors.green.withOpacity(0.2) 
-                                : AppColors.darkBackground,
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: userSummary?.status == 'Online' 
-                                  ? Colors.green 
-                                  : AppColors.textSubtle,
-                            ),
-                          ),
-                          child: Text(
-                            userSummary!.status,
-                            style: TextStyle(
-                              color: userSummary?.status == 'Online' 
-                                  ? Colors.green 
-                                  : AppColors.textSubtle,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -136,6 +112,23 @@ class UserProfileCard extends StatelessWidget {
                           label: 'Rank',
                           value: '#${userSummary?.rank}',
                         ),
+                        if (userAwards != null) ...[
+                          StatItem(
+                            icon: Icons.military_tech,
+                            label: 'Mastered',
+                            value: DashboardFormatter.formatNumber(userAwards!.masteryAwardsCount),
+                          ),
+                          StatItem(
+                            icon: Icons.gamepad,
+                            label: 'Beaten',
+                            value: DashboardFormatter.formatNumber(userAwards!.beatenHardcoreAwardsCount),
+                          ),
+                          StatItem(
+                            icon: Icons.workspace_premium,
+                            label: 'Total Awards',
+                            value: DashboardFormatter.formatNumber(userAwards!.totalAwardsCount),
+                          ),
+                        ],
                       ],
                     ),
                   const SizedBox(height: 4),

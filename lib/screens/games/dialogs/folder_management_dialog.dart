@@ -9,7 +9,6 @@ class FolderManagementDialog extends StatefulWidget {
   final String consoleName;
   final List<String> initialFolders;
   final Function(List<String>) onSave;
-  final HashMethod hashMethod;
 
   const FolderManagementDialog({
     super.key,
@@ -17,7 +16,6 @@ class FolderManagementDialog extends StatefulWidget {
     required this.consoleName,
     required this.initialFolders,
     required this.onSave,
-    required this.hashMethod,
   });
 
   @override
@@ -81,7 +79,6 @@ class _FolderManagementDialogState extends State<FolderManagementDialog> {
   Widget build(BuildContext context) {
     final List<String> supportedExtensions = 
         ConsoleHashMethods.getFileExtensionsForConsole(widget.consoleId);
-    final String hashMethodName = widget.hashMethod.name;
     
     return AlertDialog(
       backgroundColor: AppColors.cardBackground,
@@ -96,13 +93,6 @@ class _FolderManagementDialogState extends State<FolderManagementDialog> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Hash Method: $hashMethodName',
-            style: const TextStyle(
-              color: AppColors.info,
-              fontSize: 14,
-            ),
-          ),
           Text(
             'Supported Extensions: ${supportedExtensions.join(", ")}',
             style: const TextStyle(

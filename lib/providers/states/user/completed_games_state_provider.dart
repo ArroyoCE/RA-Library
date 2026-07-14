@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retroachievements_organizer/models/user/completed_game.dart';
-import 'package:retroachievements_organizer/providers/repositories/user/completed_games_repository_provider.dart';
+import 'package:retroachievements_organizer/providers/repositories/user/user_stats_repository_provider.dart';
 import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/user/completed_games_repository.dart';
+import 'package:retroachievements_organizer/repositories/user/user_stats_repository.dart';
 
 class CompletedGamesState {
   final bool isLoading;
@@ -45,11 +45,11 @@ class CompletedGamesState {
 }
 
 class CompletedGamesNotifier extends StateNotifier<CompletedGamesState> {
-  final CompletedGamesRepository completedGamesRepository;
+  final UserStatsRepository repository;
   final String username;
   final String apiKey;
 
-  CompletedGamesNotifier(this.completedGamesRepository, this.username, this.apiKey) 
+  CompletedGamesNotifier(this.repository, this.username, this.apiKey) 
       : super(CompletedGamesState()) {
     if (username.isNotEmpty && apiKey.isNotEmpty) {
       loadData();
@@ -68,7 +68,7 @@ class CompletedGamesNotifier extends StateNotifier<CompletedGamesState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      final completedGames = await completedGamesRepository.getUserCompletedGames(
+      final completedGames = await repository.getUserCompletedGames(
         username, 
         apiKey, 
         useCache: !forceRefresh
@@ -97,7 +97,7 @@ class CompletedGamesNotifier extends StateNotifier<CompletedGamesState> {
 
 final completedGamesStateProvider = StateNotifierProvider<CompletedGamesNotifier, CompletedGamesState>((ref) {
   final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(completedGamesRepositoryProvider);
+  final repository = ref.watch(userStatsRepositoryProvider);
   
   return CompletedGamesNotifier(
     repository, 
