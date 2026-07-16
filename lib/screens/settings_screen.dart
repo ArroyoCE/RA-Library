@@ -253,6 +253,18 @@ class _SettingsContentState extends ConsumerState<SettingsContent> with Automati
                 if (value != null) ref.read(settingsProvider.notifier).setIgnoreDemo(value);
               },
             ),
+            // Subset
+            CheckboxListTile(
+              dense: true,
+              visualDensity: VisualDensity.compact,
+              title: const Text('Subset (Subset)', style: TextStyle(color: AppColors.textLight, fontSize: 13)),
+              value: ref.watch(settingsProvider).ignoreSubset,
+              activeColor: AppColors.primary,
+              checkColor: AppColors.textDark,
+              onChanged: (value) {
+                if (value != null) ref.read(settingsProvider.notifier).setIgnoreSubset(value);
+              },
+            ),
             
             const SizedBox(height: 16),
             Center(

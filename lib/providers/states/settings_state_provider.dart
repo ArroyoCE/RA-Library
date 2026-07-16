@@ -9,6 +9,7 @@ class SettingsState {
   final bool ignorePrototype;
   final bool ignoreUnlicensed;
   final bool ignoreDemo;
+  final bool ignoreSubset;
 
   SettingsState({
     this.ignoreHack = false,
@@ -16,6 +17,7 @@ class SettingsState {
     this.ignorePrototype = false,
     this.ignoreUnlicensed = false,
     this.ignoreDemo = false,
+    this.ignoreSubset = false,
   });
 
   SettingsState copyWith({
@@ -24,6 +26,7 @@ class SettingsState {
     bool? ignorePrototype,
     bool? ignoreUnlicensed,
     bool? ignoreDemo,
+    bool? ignoreSubset,
   }) {
     return SettingsState(
       ignoreHack: ignoreHack ?? this.ignoreHack,
@@ -31,6 +34,7 @@ class SettingsState {
       ignorePrototype: ignorePrototype ?? this.ignorePrototype,
       ignoreUnlicensed: ignoreUnlicensed ?? this.ignoreUnlicensed,
       ignoreDemo: ignoreDemo ?? this.ignoreDemo,
+      ignoreSubset: ignoreSubset ?? this.ignoreSubset,
     );
   }
   
@@ -40,6 +44,7 @@ class SettingsState {
     if (ignorePrototype && title.contains('~Prototype~')) return true;
     if (ignoreUnlicensed && title.contains('~Unlicensed~')) return true;
     if (ignoreDemo && title.contains('~Demo~')) return true;
+    if (ignoreSubset && title.contains('Subset')) return true;
     return false;
   }
 }
@@ -57,6 +62,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       ignorePrototype: prefs.getBool('ignore_prototype') ?? false,
       ignoreUnlicensed: prefs.getBool('ignore_unlicensed') ?? false,
       ignoreDemo: prefs.getBool('ignore_demo') ?? false,
+      ignoreSubset: prefs.getBool('ignore_subset') ?? false,
     );
   }
 
@@ -88,6 +94,12 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('ignore_demo', value);
     state = state.copyWith(ignoreDemo: value);
+  }
+
+  Future<void> setIgnoreSubset(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('ignore_subset', value);
+    state = state.copyWith(ignoreSubset: value);
   }
 }
 
