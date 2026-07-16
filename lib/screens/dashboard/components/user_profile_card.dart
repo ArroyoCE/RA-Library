@@ -2,12 +2,12 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/models/user_state.dart';
-import 'package:retroachievements_organizer/models/user/user_summary_model.dart';
-import 'package:retroachievements_organizer/models/user/user_awards_model.dart';
-import 'package:retroachievements_organizer/screens/dashboard/utils/dashboard_formatter.dart';
-import 'package:retroachievements_organizer/screens/dashboard/widgets/stat_item.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/models/user_state.dart';
+import 'package:retroachievements_library/models/user/user_summary_model.dart';
+import 'package:retroachievements_library/models/user/user_awards_model.dart';
+import 'package:retroachievements_library/screens/dashboard/utils/dashboard_formatter.dart';
+import 'package:retroachievements_library/screens/dashboard/widgets/stat_item.dart';
 
 class UserProfileCard extends StatelessWidget {
   final UserState userState;
@@ -24,15 +24,13 @@ class UserProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProfile = userState.userProfile;
-    
+
     if (userProfile == null) return const SizedBox.shrink();
-    
+
     return Card(
       color: AppColors.cardBackground,
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -47,30 +45,31 @@ class UserProfileCard extends StatelessWidget {
                 border: Border.all(color: AppColors.primary, width: 2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: userState.userPicPath != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Image.file(
-                        File(userState.userPicPath!),
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          debugPrint('Error loading user pic: $error');
-                          return const Icon(
-                            Icons.account_circle,
-                            color: AppColors.primary,
-                            size: 60,
-                          );
-                        },
+              child:
+                  userState.userPicPath != null
+                      ? ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Image.file(
+                          File(userState.userPicPath!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            debugPrint('Error loading user pic: $error');
+                            return const Icon(
+                              Icons.account_circle,
+                              color: AppColors.primary,
+                              size: 60,
+                            );
+                          },
+                        ),
+                      )
+                      : const Icon(
+                        Icons.account_circle,
+                        color: AppColors.primary,
+                        size: 60,
                       ),
-                    )
-                  : const Icon(
-                      Icons.account_circle,
-                      color: AppColors.primary,
-                      size: 60,
-                    ),
             ),
             const SizedBox(width: 16),
-            
+
             // User info
             Expanded(
               child: Column(
@@ -90,7 +89,7 @@ class UserProfileCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  
+
                   // User stats
                   if (userSummary != null)
                     Wrap(
@@ -100,7 +99,9 @@ class UserProfileCard extends StatelessWidget {
                         StatItem(
                           icon: Icons.emoji_events,
                           label: 'Total Points',
-                          value: DashboardFormatter.formatNumber(userSummary?.totalPoints),
+                          value: DashboardFormatter.formatNumber(
+                            userSummary?.totalPoints,
+                          ),
                         ),
                         StatItem(
                           icon: Icons.star,
@@ -116,23 +117,29 @@ class UserProfileCard extends StatelessWidget {
                           StatItem(
                             icon: Icons.military_tech,
                             label: 'Mastered',
-                            value: DashboardFormatter.formatNumber(userAwards!.masteryAwardsCount),
+                            value: DashboardFormatter.formatNumber(
+                              userAwards!.masteryAwardsCount,
+                            ),
                           ),
                           StatItem(
                             icon: Icons.gamepad,
                             label: 'Beaten',
-                            value: DashboardFormatter.formatNumber(userAwards!.beatenHardcoreAwardsCount),
+                            value: DashboardFormatter.formatNumber(
+                              userAwards!.beatenHardcoreAwardsCount,
+                            ),
                           ),
                           StatItem(
                             icon: Icons.workspace_premium,
                             label: 'Total Awards',
-                            value: DashboardFormatter.formatNumber(userAwards!.totalAwardsCount),
+                            value: DashboardFormatter.formatNumber(
+                              userAwards!.totalAwardsCount,
+                            ),
                           ),
                         ],
                       ],
                     ),
                   const SizedBox(height: 4),
-                  
+
                   // Motto
                   if (userProfile.motto.isNotEmpty)
                     Text(

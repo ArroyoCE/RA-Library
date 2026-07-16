@@ -1,7 +1,7 @@
 // lib/screens/achievements/components/achievement_header.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class AchievementHeader extends StatelessWidget {
   final VoidCallback onSort;
@@ -94,19 +94,47 @@ class AchievementHeader extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Stats Row
             Row(
               children: [
-                Expanded(child: _buildStatMiniCard('Played', gamesPlayed.toString(), Icons.videogame_asset, Colors.amber)),
+                Expanded(
+                  child: _buildStatMiniCard(
+                    'Played',
+                    gamesPlayed.toString(),
+                    Icons.videogame_asset,
+                    Colors.amber,
+                  ),
+                ),
                 const SizedBox(width: 8),
-                Expanded(child: _buildStatMiniCard('Unfinished', unfinished.toString(), Icons.hourglass_empty, AppColors.info)),
+                Expanded(
+                  child: _buildStatMiniCard(
+                    'Unfinished',
+                    unfinished.toString(),
+                    Icons.hourglass_empty,
+                    AppColors.info,
+                  ),
+                ),
                 const SizedBox(width: 8),
-                Expanded(child: _buildStatMiniCard('Beaten', totalBeaten.toString(), Icons.military_tech, AppColors.success)),
+                Expanded(
+                  child: _buildStatMiniCard(
+                    'Beaten',
+                    totalBeaten.toString(),
+                    Icons.military_tech,
+                    AppColors.success,
+                  ),
+                ),
                 const SizedBox(width: 8),
-                Expanded(child: _buildStatMiniCard('Mastered', totalMastered.toString(), Icons.workspace_premium, AppColors.primary)),
+                Expanded(
+                  child: _buildStatMiniCard(
+                    'Mastered',
+                    totalMastered.toString(),
+                    Icons.workspace_premium,
+                    AppColors.primary,
+                  ),
+                ),
               ],
             ),
           ],
@@ -122,7 +150,10 @@ class AchievementHeader extends StatelessWidget {
     required bool isActive,
   }) {
     return Material(
-      color: isActive ? AppColors.primary.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+      color:
+          isActive
+              ? AppColors.primary.withValues(alpha: 0.2)
+              : Colors.white.withValues(alpha: 0.05),
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -135,13 +166,19 @@ class AchievementHeader extends StatelessWidget {
               Icon(
                 icon,
                 size: 18,
-                color: isActive ? AppColors.primary : Colors.white.withValues(alpha: 0.9),
+                color:
+                    isActive
+                        ? AppColors.primary
+                        : Colors.white.withValues(alpha: 0.9),
               ),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
-                  color: isActive ? AppColors.primary : Colors.white.withValues(alpha: 0.9),
+                  color:
+                      isActive
+                          ? AppColors.primary
+                          : Colors.white.withValues(alpha: 0.9),
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -153,15 +190,18 @@ class AchievementHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildStatMiniCard(String label, String value, IconData icon, Color color) {
+  Widget _buildStatMiniCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
@@ -171,11 +211,7 @@ class AchievementHeader extends StatelessWidget {
               color: color.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
+            child: Icon(icon, color: color, size: 24),
           ),
           const SizedBox(width: 16),
           Column(

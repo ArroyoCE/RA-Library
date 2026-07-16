@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
-enum GameSortOption {
-  nameAsc,
-  nameDesc,
-}
+enum GameSortOption { nameAsc, nameDesc }
 
-enum GameMatchFilter {
-  all,
-  matched,
-  unmatched,
-}
+enum GameMatchFilter { all, matched, unmatched }
 
 class GamesFilters extends StatelessWidget {
   final TextEditingController searchController;
@@ -44,15 +37,19 @@ class GamesFilters extends StatelessWidget {
               hintText: 'Search games...',
               hintStyle: const TextStyle(color: AppColors.textSubtle),
               prefixIcon: const Icon(Icons.search, color: AppColors.primary),
-              suffixIcon: searchController.text.isNotEmpty 
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, color: AppColors.textSubtle),
-                      onPressed: () {
-                        searchController.clear();
-                        onSearchChanged('');
-                      },
-                    )
-                  : null,
+              suffixIcon:
+                  searchController.text.isNotEmpty
+                      ? IconButton(
+                        icon: const Icon(
+                          Icons.clear,
+                          color: AppColors.textSubtle,
+                        ),
+                        onPressed: () {
+                          searchController.clear();
+                          onSearchChanged('');
+                        },
+                      )
+                      : null,
               filled: true,
               fillColor: AppColors.cardBackground,
               enabledBorder: OutlineInputBorder(
@@ -61,16 +58,22 @@ class GamesFilters extends StatelessWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 2,
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 8,
+                horizontal: 8,
+              ),
             ),
             onChanged: onSearchChanged,
           ),
         ),
-        
+
         const SizedBox(width: 8),
-        
+
         // Match filter dropdown
         Container(
           decoration: BoxDecoration(
@@ -90,15 +93,24 @@ class GamesFilters extends StatelessWidget {
               items: const [
                 DropdownMenuItem(
                   value: GameMatchFilter.all,
-                  child: Text('All Games', style: TextStyle(color: AppColors.textLight)),
+                  child: Text(
+                    'All Games',
+                    style: TextStyle(color: AppColors.textLight),
+                  ),
                 ),
                 DropdownMenuItem(
                   value: GameMatchFilter.matched,
-                  child: Text('In Library', style: TextStyle(color: AppColors.textLight)),
+                  child: Text(
+                    'In Library',
+                    style: TextStyle(color: AppColors.textLight),
+                  ),
                 ),
                 DropdownMenuItem(
                   value: GameMatchFilter.unmatched,
-                  child: Text('Not In Library', style: TextStyle(color: AppColors.textLight)),
+                  child: Text(
+                    'Not In Library',
+                    style: TextStyle(color: AppColors.textLight),
+                  ),
                 ),
               ],
               dropdownColor: AppColors.darkBackground,
@@ -106,9 +118,9 @@ class GamesFilters extends StatelessWidget {
             ),
           ),
         ),
-        
+
         const SizedBox(width: 8),
-        
+
         // Sorting dropdown
         Container(
           decoration: BoxDecoration(
@@ -128,11 +140,17 @@ class GamesFilters extends StatelessWidget {
               items: const [
                 DropdownMenuItem(
                   value: GameSortOption.nameAsc,
-                  child: Text('Name (A-Z)', style: TextStyle(color: AppColors.textLight)),
+                  child: Text(
+                    'Name (A-Z)',
+                    style: TextStyle(color: AppColors.textLight),
+                  ),
                 ),
                 DropdownMenuItem(
                   value: GameSortOption.nameDesc,
-                  child: Text('Name (Z-A)', style: TextStyle(color: AppColors.textLight)),
+                  child: Text(
+                    'Name (Z-A)',
+                    style: TextStyle(color: AppColors.textLight),
+                  ),
                 ),
               ],
               dropdownColor: AppColors.darkBackground,

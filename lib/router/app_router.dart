@@ -5,18 +5,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/screens/about_screen.dart';
-import 'package:retroachievements_organizer/screens/achievements/achievements_screen.dart';
-import 'package:retroachievements_organizer/screens/auth/login_screen.dart';
-import 'package:retroachievements_organizer/screens/consoles/consoles_screen.dart';
-import 'package:retroachievements_organizer/screens/dashboard/dashboard_screen.dart';
-import 'package:retroachievements_organizer/screens/game_data/game_data_screen.dart';
-import 'package:retroachievements_organizer/screens/games/games_screen.dart';
-import 'package:retroachievements_organizer/screens/hash_check/hash_check_screen.dart';
-import 'package:retroachievements_organizer/screens/main_app_screen.dart';
-import 'package:retroachievements_organizer/screens/settings_screen.dart';
-import 'package:retroachievements_organizer/screens/splash_screen.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/screens/about_screen.dart';
+import 'package:retroachievements_library/screens/achievements/achievements_screen.dart';
+import 'package:retroachievements_library/screens/auth/login_screen.dart';
+import 'package:retroachievements_library/screens/consoles/consoles_screen.dart';
+import 'package:retroachievements_library/screens/dashboard/dashboard_screen.dart';
+import 'package:retroachievements_library/screens/game_data/game_data_screen.dart';
+import 'package:retroachievements_library/screens/games/games_screen.dart';
+import 'package:retroachievements_library/screens/hash_check/hash_check_screen.dart';
+import 'package:retroachievements_library/screens/main_app_screen.dart';
+import 'package:retroachievements_library/screens/settings_screen.dart';
+import 'package:retroachievements_library/screens/splash_screen.dart';
 
 // Root navigator key
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -28,7 +28,10 @@ final _achievementsNavigatorKey = GlobalKey<NavigatorState>();
 final _hashCheckNavigatorKey = GlobalKey<NavigatorState>();
 final _settingsNavigatorKey = GlobalKey<NavigatorState>();
 
-GoRoute _buildGameDetailRoute({required String name, required String navigationSource}) {
+GoRoute _buildGameDetailRoute({
+  required String name,
+  required String navigationSource,
+}) {
   return GoRoute(
     path: 'game/:gameId',
     name: name,
@@ -37,7 +40,7 @@ GoRoute _buildGameDetailRoute({required String name, required String navigationS
       final title = state.uri.queryParameters['title'] ?? 'Game';
       final iconPath = state.uri.queryParameters['icon'] ?? '';
       final consoleName = state.uri.queryParameters['console'] ?? '';
-      
+
       return NoTransitionPage(
         child: GameDataScreen(
           gameId: gameId,
@@ -54,7 +57,7 @@ GoRoute _buildGameDetailRoute({required String name, required String navigationS
 // Provider that exposes the GoRouter instance
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authStateNotifier = ref.watch(authStateProvider.notifier);
-  
+
   return GoRouter(
     debugLogDiagnostics: true,
     navigatorKey: _rootNavigatorKey,
@@ -64,33 +67,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final userState = ref.read(authStateProvider);
       final isLoggedIn = userState.isAuthenticated;
       final location = state.matchedLocation;
-      
+
       final isLogging = location == '/login';
       final isSplash = location == '/splash';
       final isAbout = location == '/about';
-      
+
       // If we're in the splash screen, don't redirect
       if (isSplash) {
         return null;
       }
-      
+
       // If not logged in and not on an auth page, redirect to login
-      if (!isLoggedIn && 
-          !isLogging && 
-          !isAbout) {
+      if (!isLoggedIn && !isLogging && !isAbout) {
         return '/login';
       }
-      
+
       // If logged in and on an auth page, redirect to dashboard
       if (isLoggedIn && isLogging) {
         return '/dashboard';
       }
-      
+
       // If logged in and at root path, redirect to dashboard
       if (isLoggedIn && location == '/') {
         return '/dashboard';
       }
-      
+
       // No redirect needed
       return null;
     },
@@ -100,19 +101,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
       ),
-      
+
       // Auth routes
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+
       // About screen (accessible without login)
-      GoRoute(
-        path: '/about',
-        builder: (context, state) => const AboutScreen(),
-      ),
-      
+      GoRoute(path: '/about', builder: (context, state) => const AboutScreen()),
+
       // Main app shell with sidebar navigation - using StatefulShellRoute instead of ShellRoute
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -126,9 +121,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/dashboard',
                 name: 'dashboard',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: DashboardScreen(child: DashboardContent()),
-                ),
+                pageBuilder:
+                    (context, state) => const NoTransitionPage(
+                      child: DashboardScreen(child: DashboardContent()),
+                    ),
                 routes: [
                   // Game data screen accessible from dashboard
                   _buildGameDetailRoute(
@@ -139,7 +135,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          
+
           // Games branch
           StatefulShellBranch(
             navigatorKey: _gamesNavigatorKey,
@@ -157,8 +153,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     path: ':consoleId',
                     name: 'games_detail',
                     pageBuilder: (context, state) {
-                      final consoleId = int.tryParse(state.pathParameters['consoleId'] ?? '0') ?? 0;
-                      final consoleName = state.uri.queryParameters['name'] ?? 'Console';
+                      final consoleId =
+                          int.tryParse(
+                            state.pathParameters['consoleId'] ?? '0',
+                          ) ??
+                          0;
+                      final consoleName =
+                          state.uri.queryParameters['name'] ?? 'Console';
                       return NoTransitionPage(
                         child: GamesScreen(
                           consoleId: consoleId,
@@ -178,7 +179,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          
+
           // Achievements branch
           StatefulShellBranch(
             navigatorKey: _achievementsNavigatorKey,
@@ -186,9 +187,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/achievements',
                 name: 'achievements',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: AchievementsScreen(child: AchievementsContent()),
-                ),
+                pageBuilder:
+                    (context, state) => const NoTransitionPage(
+                      child: AchievementsScreen(child: AchievementsContent()),
+                    ),
                 routes: [
                   // Game data screen accessible from achievements
                   _buildGameDetailRoute(
@@ -199,7 +201,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          
+
           // Hash Check branch
           StatefulShellBranch(
             navigatorKey: _hashCheckNavigatorKey,
@@ -207,9 +209,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/hash-check',
                 name: 'hash_check',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: HashCheckScreen(child: HashCheckContent()),
-                ),
+                pageBuilder:
+                    (context, state) => const NoTransitionPage(
+                      child: HashCheckScreen(child: HashCheckContent()),
+                    ),
                 routes: [
                   _buildGameDetailRoute(
                     name: 'hash_check_game_details',
@@ -219,7 +222,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          
+
           // Settings branch
           StatefulShellBranch(
             navigatorKey: _settingsNavigatorKey,
@@ -227,9 +230,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/settings',
                 name: 'settings',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: SettingsScreen(child: SettingsContent()),
-                ),
+                pageBuilder:
+                    (context, state) => const NoTransitionPage(
+                      child: SettingsScreen(child: SettingsContent()),
+                    ),
                 routes: const [
                   // Add nested routes for Settings here if needed
                 ],
@@ -239,24 +243,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Error: ${state.error}',
-              style: const TextStyle(color: Colors.red),
+    errorBuilder:
+        (context, state) => Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Error: ${state.error}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => context.go('/dashboard'),
+                  child: const Text('Go to Dashboard'),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => context.go('/dashboard'),
-              child: const Text('Go to Dashboard'),
-            ),
-          ],
+          ),
         ),
-      ),
-    ),
   );
 });
 
@@ -265,8 +270,8 @@ class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
     _subscription = stream.asBroadcastStream().listen(
-          (dynamic _) => notifyListeners(),
-        );
+      (dynamic _) => notifyListeners(),
+    );
   }
 
   late final StreamSubscription<dynamic> _subscription;

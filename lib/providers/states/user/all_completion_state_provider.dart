@@ -1,10 +1,10 @@
 // lib/providers/states/all_completion_state_provider.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/models/user/all_completion_model.dart';
-import 'package:retroachievements_organizer/providers/repositories/user/user_stats_repository_provider.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/user/user_stats_repository.dart';
+import 'package:retroachievements_library/models/user/all_completion_model.dart';
+import 'package:retroachievements_library/providers/repositories/user/user_stats_repository_provider.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/repositories/user/user_stats_repository.dart';
 
 class CompletionProgressState {
   final bool isLoading;
@@ -34,13 +34,14 @@ class CompletionProgressState {
   }
 }
 
-class CompletionProgressNotifier extends StateNotifier<CompletionProgressState> {
+class CompletionProgressNotifier
+    extends StateNotifier<CompletionProgressState> {
   final UserStatsRepository repository;
   final String username;
   final String apiKey;
 
-  CompletionProgressNotifier(this.repository, this.username, this.apiKey) 
-      : super(CompletionProgressState()) {
+  CompletionProgressNotifier(this.repository, this.username, this.apiKey)
+    : super(CompletionProgressState()) {
     if (username.isNotEmpty && apiKey.isNotEmpty) {
       loadData();
     }
@@ -59,9 +60,9 @@ class CompletionProgressNotifier extends StateNotifier<CompletionProgressState> 
 
     try {
       final completionProgress = await repository.getUserCompletionProgress(
-        username, 
-        apiKey, 
-        useCache: !forceRefresh
+        username,
+        apiKey,
+        useCache: !forceRefresh,
       );
 
       if (completionProgress != null) {
@@ -85,13 +86,16 @@ class CompletionProgressNotifier extends StateNotifier<CompletionProgressState> 
   }
 }
 
-final completionProgressStateProvider = StateNotifierProvider<CompletionProgressNotifier, CompletionProgressState>((ref) {
-  final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(userStatsRepositoryProvider);
-  
-  return CompletionProgressNotifier(
-    repository, 
-    authState.username ?? '', 
-    authState.apiKey ?? ''
-  );
-});
+final completionProgressStateProvider =
+    StateNotifierProvider<CompletionProgressNotifier, CompletionProgressState>((
+      ref,
+    ) {
+      final authState = ref.watch(authStateProvider);
+      final repository = ref.watch(userStatsRepositoryProvider);
+
+      return CompletionProgressNotifier(
+        repository,
+        authState.username ?? '',
+        authState.apiKey ?? '',
+      );
+    });

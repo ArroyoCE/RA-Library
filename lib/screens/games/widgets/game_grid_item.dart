@@ -1,11 +1,11 @@
 // lib/screens/games/widgets/game_grid_item.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/models/consoles/all_game_hash.dart';
-import 'package:retroachievements_organizer/models/local/hash_match_model.dart';
-import 'package:retroachievements_organizer/screens/games/utils/games_helper.dart';
-import 'package:retroachievements_organizer/screens/games/utils/hash_matching.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
+import 'package:retroachievements_library/models/local/hash_match_model.dart';
+import 'package:retroachievements_library/screens/games/utils/games_helper.dart';
+import 'package:retroachievements_library/screens/games/utils/hash_matching.dart';
 
 class GameGridItem extends StatelessWidget {
   final GameHash game;
@@ -26,12 +26,12 @@ class GameGridItem extends StatelessWidget {
     // Determine match status color and text
     Color statusColor = AppColors.textSubtle;
     String statusText = 'Checking...';
-    
+
     if (matchStatus != null) {
       statusColor = HashMatchingService.getMatchStatusColor(matchStatus!);
       statusText = HashMatchingService.getMatchStatusText(matchStatus!);
     }
-    
+
     return Card(
       color: AppColors.cardBackground,
       elevation: 4,
@@ -48,13 +48,16 @@ class GameGridItem extends StatelessWidget {
                 children: [
                   // Game image
                   _buildGameImage(),
-                  
+
                   // Match status indicator
                   Positioned(
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: statusColor.withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(4),
@@ -69,13 +72,16 @@ class GameGridItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   // Achievement count
                   Positioned(
                     bottom: 8,
                     left: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.darkBackground.withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(4),
@@ -103,7 +109,7 @@ class GameGridItem extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Game title
             Expanded(
               flex: 4,
@@ -132,8 +138,7 @@ class GameGridItem extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (matchStatus != null)
-                      const Spacer(),
+                    if (matchStatus != null) const Spacer(),
                     if (matchStatus != null)
                       Row(
                         children: [
@@ -149,10 +154,7 @@ class GameGridItem extends StatelessWidget {
                           Expanded(
                             child: Text(
                               '${game.hashes.length} hashes',
-                              style: TextStyle(
-                                color: statusColor,
-                                fontSize: 9,
-                              ),
+                              style: TextStyle(color: statusColor, fontSize: 9),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -172,8 +174,9 @@ class GameGridItem extends StatelessWidget {
   Widget _buildGameImage() {
     // Try to load image from network
     final hasImageIcon = game.imageIcon.isNotEmpty;
-    final imageUrl = hasImageIcon ? 'https://retroachievements.org${game.imageIcon}' : '';
-    
+    final imageUrl =
+        hasImageIcon ? 'https://retroachievements.org${game.imageIcon}' : '';
+
     if (hasImageIcon) {
       return ClipRRect(
         borderRadius: const BorderRadius.only(
@@ -192,10 +195,14 @@ class GameGridItem extends StatelessWidget {
             if (loadingProgress == null) return child;
             return Center(
               child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                    : null,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                value:
+                    loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppColors.primary,
+                ),
               ),
             );
           },
@@ -210,11 +217,7 @@ class GameGridItem extends StatelessWidget {
     return Container(
       color: AppColors.darkBackground,
       child: const Center(
-        child: Icon(
-          Icons.videogame_asset,
-          color: AppColors.primary,
-          size: 48,
-        ),
+        child: Icon(Icons.videogame_asset, color: AppColors.primary, size: 48),
       ),
     );
   }

@@ -1,10 +1,10 @@
 // lib/providers/states/all_consoles_state_provider.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/models/consoles/all_console_model.dart';
-import 'package:retroachievements_organizer/providers/repositories/consoles/all_consoles_repository_provider.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/consoles/all_consoles_repository.dart';
+import 'package:retroachievements_library/models/consoles/all_console_model.dart';
+import 'package:retroachievements_library/providers/repositories/consoles/all_consoles_repository_provider.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/repositories/consoles/all_consoles_repository.dart';
 
 class ConsolesState {
   final bool isLoading;
@@ -38,8 +38,8 @@ class ConsolesNotifier extends StateNotifier<ConsolesState> {
   final AllConsolesRepository allConsolesRepository;
   final String apiKey;
 
-  ConsolesNotifier(this.allConsolesRepository, this.apiKey) 
-      : super(ConsolesState()) {
+  ConsolesNotifier(this.allConsolesRepository, this.apiKey)
+    : super(ConsolesState()) {
     if (apiKey.isNotEmpty) {
       loadData();
     }
@@ -58,8 +58,8 @@ class ConsolesNotifier extends StateNotifier<ConsolesState> {
 
     try {
       final consolesList = await allConsolesRepository.getConsoleIDs(
-        apiKey, 
-        useCache: !forceRefresh
+        apiKey,
+        useCache: !forceRefresh,
       );
 
       if (consolesList != null) {
@@ -83,12 +83,10 @@ class ConsolesNotifier extends StateNotifier<ConsolesState> {
   }
 }
 
-final consolesStateProvider = StateNotifierProvider<ConsolesNotifier, ConsolesState>((ref) {
-  final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(allConsolesRepositoryProvider);
-  
-  return ConsolesNotifier(
-    repository, 
-    authState.apiKey ?? ''
-  );
-});
+final consolesStateProvider =
+    StateNotifierProvider<ConsolesNotifier, ConsolesState>((ref) {
+      final authState = ref.watch(authStateProvider);
+      final repository = ref.watch(allConsolesRepositoryProvider);
+
+      return ConsolesNotifier(repository, authState.apiKey ?? '');
+    });

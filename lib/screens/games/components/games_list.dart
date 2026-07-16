@@ -1,9 +1,9 @@
 // lib/screens/games/components/games_list.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/models/consoles/all_game_hash.dart';
-import 'package:retroachievements_organizer/models/local/hash_match_model.dart';
-import 'package:retroachievements_organizer/screens/games/widgets/game_list_item.dart';
+import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
+import 'package:retroachievements_library/models/local/hash_match_model.dart';
+import 'package:retroachievements_library/screens/games/widgets/game_list_item.dart';
 
 class GamesList extends StatelessWidget {
   final List<GameHash> games;
@@ -26,10 +26,11 @@ class GamesList extends StatelessWidget {
       itemCount: games.length,
       itemBuilder: (context, index) {
         final game = games[index];
-        
+
         // Get match status for this game if available
-        final matchStatus = matchStatuses != null ? matchStatuses![game.id] : null;
-        
+        final matchStatus =
+            matchStatuses != null ? matchStatuses![game.id] : null;
+
         return GameListItem(
           game: game,
           onTap: () => onGameSelected(game),

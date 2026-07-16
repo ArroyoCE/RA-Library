@@ -1,20 +1,16 @@
 // lib/screens/consoles/components/consoles_filters.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class ConsolesFilters extends StatelessWidget {
   final TextEditingController searchController;
   final Function(String) onSearchChanged;
-  
-  
 
   const ConsolesFilters({
     super.key,
     required this.searchController,
     required this.onSearchChanged,
-    
-    
   });
 
   @override
@@ -30,15 +26,19 @@ class ConsolesFilters extends StatelessWidget {
             hintText: 'Search consoles...',
             hintStyle: const TextStyle(color: AppColors.textSubtle),
             prefixIcon: const Icon(Icons.search, color: AppColors.primary),
-            suffixIcon: searchController.text.isNotEmpty 
-                ? IconButton(
-                    icon: const Icon(Icons.clear, color: AppColors.textSubtle),
-                    onPressed: () {
-                      searchController.clear();
-                      onSearchChanged('');
-                    },
-                  )
-                : null,
+            suffixIcon:
+                searchController.text.isNotEmpty
+                    ? IconButton(
+                      icon: const Icon(
+                        Icons.clear,
+                        color: AppColors.textSubtle,
+                      ),
+                      onPressed: () {
+                        searchController.clear();
+                        onSearchChanged('');
+                      },
+                    )
+                    : null,
             filled: true,
             fillColor: AppColors.cardBackground,
             enabledBorder: OutlineInputBorder(
@@ -52,7 +52,6 @@ class ConsolesFilters extends StatelessWidget {
           ),
           onChanged: onSearchChanged,
         ),
-        
       ],
     );
   }

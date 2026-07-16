@@ -2,14 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class GamesHeader extends StatelessWidget {
   final String consoleName;
   final VoidCallback onViewToggle;
   final VoidCallback onRefresh;
   final bool isGridView;
-  final bool isHashingInProgress;  // Add this parameter
+  final bool isHashingInProgress; // Add this parameter
 
   const GamesHeader({
     super.key,
@@ -17,7 +17,7 @@ class GamesHeader extends StatelessWidget {
     required this.onViewToggle,
     required this.onRefresh,
     required this.isGridView,
-    this.isHashingInProgress = false,  // Default to false
+    this.isHashingInProgress = false, // Default to false
   });
 
   @override
@@ -33,12 +33,14 @@ class GamesHeader extends StatelessWidget {
                 // Back button - disabled when hashing is in progress
                 IconButton(
                   icon: const Icon(Icons.arrow_back, color: AppColors.primary),
-                  onPressed: isHashingInProgress 
-                      ? null  // Disable the button
-                      : () => context.go('/games'),
-                  tooltip: isHashingInProgress 
-                      ? 'Please wait until hashing completes' 
-                      : 'Back to consoles',
+                  onPressed:
+                      isHashingInProgress
+                          ? null // Disable the button
+                          : () => context.go('/games'),
+                  tooltip:
+                      isHashingInProgress
+                          ? 'Please wait until hashing completes'
+                          : 'Back to consoles',
                 ),
                 // Screen title
                 const Text(
@@ -60,7 +62,10 @@ class GamesHeader extends StatelessWidget {
                     color: AppColors.primary,
                   ),
                   onPressed: isHashingInProgress ? null : onViewToggle,
-                  tooltip: isGridView ? 'Switch to list view' : 'Switch to grid view',
+                  tooltip:
+                      isGridView
+                          ? 'Switch to list view'
+                          : 'Switch to grid view',
                 ),
                 // Refresh button - should be disabled during hashing
                 IconButton(

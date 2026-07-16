@@ -1,10 +1,10 @@
 // lib/providers/repositories/all_games_hashes_repository_provider.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/api/consoles/all_games_hashes_api.dart';
-import 'package:retroachievements_organizer/repositories/consoles/all_games_hashes_repository.dart';
-import 'package:retroachievements_organizer/repositories/consoles/all_games_hashes_repository_impl.dart';
-import 'package:retroachievements_organizer/services/storage_service.dart';
+import 'package:retroachievements_library/api/consoles/all_games_hashes_api.dart';
+import 'package:retroachievements_library/repositories/consoles/all_games_hashes_repository.dart';
+import 'package:retroachievements_library/repositories/consoles/all_games_hashes_repository_impl.dart';
+import 'package:retroachievements_library/services/storage_service.dart';
 
 // Provider for the AllGamesHashesAPI
 final allGamesHashesApiProvider = Provider<AllGamesHashesApi>((ref) {
@@ -12,7 +12,9 @@ final allGamesHashesApiProvider = Provider<AllGamesHashesApi>((ref) {
 });
 
 // Provider for the AllGamesHashesRepository
-final allGamesHashesRepositoryProvider = Provider<AllGamesHashesRepository>((ref) {
+final allGamesHashesRepositoryProvider = Provider<AllGamesHashesRepository>((
+  ref,
+) {
   final allGamesHashesApi = ref.watch(allGamesHashesApiProvider);
   final storageService = ref.watch(storageServiceProvider);
   return AllGamesHashesRepositoryImpl(allGamesHashesApi, storageService);

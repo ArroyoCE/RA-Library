@@ -3,32 +3,30 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:retroachievements_organizer/constants/api_constants.dart';
+import 'package:retroachievements_library/constants/api_constants.dart';
 
 class AllCompletionApi {
-  Future<Map<String, dynamic>> getUserCompletionProgress(String username, String apiKey) async {
+  Future<Map<String, dynamic>> getUserCompletionProgress(
+    String username,
+    String apiKey,
+  ) async {
     try {
       final url = ApiConstants.getUserCompletionProgressUrl(username, apiKey);
       final response = await http.get(Uri.parse(url));
-      
+
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-        return {
-          'success': true,
-          'data': decodedResponse,
-        };
+        return {'success': true, 'data': decodedResponse};
       } else {
         return {
           'success': false,
-          'error': 'Failed to load user completion progress: ${response.statusCode}',
+          'error':
+              'Failed to load user completion progress: ${response.statusCode}',
         };
       }
     } catch (e) {
       debugPrint('Error getting user completion progress: $e');
-      return {
-        'success': false,
-        'error': e.toString(),
-      };
+      return {'success': false, 'error': e.toString()};
     }
   }
 }

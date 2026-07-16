@@ -1,6 +1,6 @@
 // lib/screens/games/widgets/folders_display.dart
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class FoldersDisplayWidget extends StatefulWidget {
   final List<String> folders;
@@ -57,15 +57,21 @@ class _FoldersDisplayWidgetState extends State<FoldersDisplayWidget> {
                         tooltip: _isExpanded ? 'Collapse' : 'Expand',
                       ),
                     IconButton(
-                      icon: const Icon(Icons.add_circle, color: AppColors.primary),
-                      onPressed: widget.isHashingInProgress ? null : widget.onAddFolder,
+                      icon: const Icon(
+                        Icons.add_circle,
+                        color: AppColors.primary,
+                      ),
+                      onPressed:
+                          widget.isHashingInProgress
+                              ? null
+                              : widget.onAddFolder,
                       tooltip: 'Add Folder',
                     ),
                   ],
                 ),
               ],
             ),
-            
+
             // Preview of first folder or empty message
             if (widget.folders.isEmpty)
               const Padding(
@@ -88,7 +94,11 @@ class _FoldersDisplayWidgetState extends State<FoldersDisplayWidget> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.folder, color: AppColors.primary, size: 18),
+                    const Icon(
+                      Icons.folder,
+                      color: AppColors.primary,
+                      size: 18,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -112,24 +122,34 @@ class _FoldersDisplayWidgetState extends State<FoldersDisplayWidget> {
                   ],
                 ),
               ),
-            
+
             // Expanded folder list
             if (_isExpanded && widget.folders.isNotEmpty)
-  ListView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: widget.folders.length,
-    itemBuilder: (context, index) {
-      return Container(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        margin: EdgeInsets.only(bottom: 4, top: index == 0 ? 4 : 0),  // Remove the 'const' here
-        decoration: BoxDecoration(
-          color: AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(4),
-        ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: widget.folders.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 8,
+                    ),
+                    margin: EdgeInsets.only(
+                      bottom: 4,
+                      top: index == 0 ? 4 : 0,
+                    ), // Remove the 'const' here
+                    decoration: BoxDecoration(
+                      color: AppColors.cardBackground,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                     child: Row(
                       children: [
-                        const Icon(Icons.folder, color: AppColors.primary, size: 18),
+                        const Icon(
+                          Icons.folder,
+                          color: AppColors.primary,
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(

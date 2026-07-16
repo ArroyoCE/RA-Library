@@ -1,8 +1,8 @@
 // lib/screens/games/dialogs/folder_management_dialog.dart
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/models/local/hash_model.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/models/local/hash_model.dart';
 
 class FolderManagementDialog extends StatefulWidget {
   final int consoleId;
@@ -25,17 +25,17 @@ class FolderManagementDialog extends StatefulWidget {
 class _FolderManagementDialogState extends State<FolderManagementDialog> {
   late List<String> _folders;
   bool _isSaving = false;
-  
+
   @override
   void initState() {
     super.initState();
     _folders = List.from(widget.initialFolders);
   }
-  
+
   Future<void> _addFolder() async {
     try {
       String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-      
+
       if (selectedDirectory != null && !_folders.contains(selectedDirectory)) {
         setState(() {
           _folders.add(selectedDirectory);
@@ -54,32 +54,32 @@ class _FolderManagementDialogState extends State<FolderManagementDialog> {
       }
     }
   }
-  
+
   void _removeFolder(int index) {
     setState(() {
       _folders.removeAt(index);
     });
   }
-  
+
   Future<void> _saveAndHash() async {
     setState(() {
       _isSaving = true;
     });
-    
+
     // Call the onSave callback which will now handle the hashing
     widget.onSave(_folders);
-    
+
     // Close the dialog
     if (mounted) {
       Navigator.of(context).pop();
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    final List<String> supportedExtensions = 
+    final List<String> supportedExtensions =
         ConsoleHashMethods.getFileExtensionsForConsole(widget.consoleId);
-    
+
     return AlertDialog(
       backgroundColor: AppColors.cardBackground,
       title: Column(
@@ -95,10 +95,7 @@ class _FolderManagementDialogState extends State<FolderManagementDialog> {
           const SizedBox(height: 8),
           Text(
             'Supported Extensions: ${supportedExtensions.join(", ")}',
-            style: const TextStyle(
-              color: AppColors.info,
-              fontSize: 12,
-            ),
+            style: const TextStyle(color: AppColors.info, fontSize: 12),
           ),
         ],
       ),
@@ -119,9 +116,9 @@ class _FolderManagementDialogState extends State<FolderManagementDialog> {
               ),
               onPressed: _addFolder,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Folder list
             const Text(
               'Current folders:',
@@ -131,37 +128,46 @@ class _FolderManagementDialogState extends State<FolderManagementDialog> {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             Expanded(
-              child: _folders.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'No folders added yet',
-                        style: TextStyle(color: AppColors.textSubtle),
+              child:
+                  _folders.isEmpty
+                      ? const Center(
+                        child: Text(
+                          'No folders added yet',
+                          style: TextStyle(color: AppColors.textSubtle),
+                        ),
+                      )
+                      : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _folders.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: AppColors.darkBackground,
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: ListTile(
+                              leading: const Icon(
+                                Icons.folder,
+                                color: AppColors.primary,
+                              ),
+                              title: Text(
+                                _folders[index],
+                                style: const TextStyle(
+                                  color: AppColors.textLight,
+                                ),
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: AppColors.error,
+                                ),
+                                onPressed: () => _removeFolder(index),
+                                tooltip: 'Remove folder',
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _folders.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: AppColors.darkBackground,
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: ListTile(
-                            leading: const Icon(Icons.folder, color: AppColors.primary),
-                            title: Text(
-                              _folders[index],
-                              style: const TextStyle(color: AppColors.textLight),
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: AppColors.error),
-                              onPressed: () => _removeFolder(index),
-                              tooltip: 'Remove folder',
-                            ),
-                          ),
-                        );
-                      },
-                    ),
             ),
           ],
         ),
@@ -180,16 +186,19 @@ class _FolderManagementDialogState extends State<FolderManagementDialog> {
             foregroundColor: AppColors.textDark,
           ),
           onPressed: _isSaving ? null : _saveAndHash,
-          child: _isSaving
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.textDark),
-                  ),
-                )
-              : const Text('Save & Hash'),
+          child:
+              _isSaving
+                  ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.textDark,
+                      ),
+                    ),
+                  )
+                  : const Text('Save & Hash'),
         ),
       ],
     );

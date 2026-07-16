@@ -1,7 +1,7 @@
 // lib/screens/dashboard/widgets/stat_item.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class StatItem extends StatelessWidget {
   final IconData icon;
@@ -27,10 +27,7 @@ class StatItem extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               label,
-              style: const TextStyle(
-                color: AppColors.textSubtle,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: AppColors.textSubtle, fontSize: 12),
             ),
           ],
         ),

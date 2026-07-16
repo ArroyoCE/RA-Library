@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class DashboardHeader extends ConsumerWidget {
   final DateTime? lastUpdated;
@@ -17,9 +17,10 @@ class DashboardHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String formattedDate = lastUpdated != null
-        ? DateFormat('yyyy-MM-dd HH:mm').format(lastUpdated!)
-        : DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now());
+    String formattedDate =
+        lastUpdated != null
+            ? DateFormat('yyyy-MM-dd HH:mm').format(lastUpdated!)
+            : DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now());
 
     return Row(
       children: [
@@ -41,10 +42,7 @@ class DashboardHeader extends ConsumerWidget {
         // Last updated timestamp
         Text(
           'Last updated: $formattedDate',
-          style: const TextStyle(
-            color: AppColors.textSubtle,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: AppColors.textSubtle, fontSize: 12),
         ),
       ],
     );

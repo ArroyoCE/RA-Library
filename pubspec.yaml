@@ -1,5 +1,5 @@
-name: retroachievements_organizer
-description: A RetroAchievements organizer app built with Flutter.
+name: retroachievements_library
+description: A RetroAchievements library app built with Flutter.
 publish_to: 'none'
 version: 1.0.0+1
 

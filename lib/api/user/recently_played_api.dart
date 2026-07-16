@@ -3,32 +3,35 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:retroachievements_organizer/constants/api_constants.dart';
+import 'package:retroachievements_library/constants/api_constants.dart';
 
 class RecentlyPlayedApi {
-  Future<Map<String, dynamic>> getUserRecentlyPlayedGames(String username, String apiKey, {int count = 10}) async {
+  Future<Map<String, dynamic>> getUserRecentlyPlayedGames(
+    String username,
+    String apiKey, {
+    int count = 10,
+  }) async {
     try {
-      final url = ApiConstants.getUserRecentlyPlayedGamesUrl(username, apiKey, count: count);
+      final url = ApiConstants.getUserRecentlyPlayedGamesUrl(
+        username,
+        apiKey,
+        count: count,
+      );
       final response = await http.get(Uri.parse(url));
-      
+
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-        return {
-          'success': true,
-          'data': decodedResponse,
-        };
+        return {'success': true, 'data': decodedResponse};
       } else {
         return {
           'success': false,
-          'error': 'Failed to load recently played games: ${response.statusCode}',
+          'error':
+              'Failed to load recently played games: ${response.statusCode}',
         };
       }
     } catch (e) {
       debugPrint('Error getting recently played games: $e');
-      return {
-        'success': false,
-        'error': e.toString(),
-      };
+      return {'success': false, 'error': e.toString()};
     }
   }
 }

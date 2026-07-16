@@ -1,7 +1,7 @@
 // lib/screens/dashboard/widgets/progress_bar.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class ProgressBar extends StatelessWidget {
   final double percentage;

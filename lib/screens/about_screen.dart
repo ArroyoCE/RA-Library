@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -32,14 +32,10 @@ class AboutScreen extends StatelessWidget {
           children: [
             // App logo
             Center(
-              child: Image.asset(
-                'images/ra-icon.png',
-                height: 120,
-                width: 120,
-              ),
+              child: Image.asset('images/ra-icon.png', height: 120, width: 120),
             ),
             const SizedBox(height: 24),
-            
+
             // App name
             const Center(
               child: Text(
@@ -53,20 +49,17 @@ class AboutScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             // Version
             const Center(
               child: Text(
                 'Version 1.0.0 (Beta)',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.grey, fontSize: 14),
                 textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 32),
-            
+
             // About content
             const Text(
               'About the App',
@@ -78,14 +71,11 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'RetroAchievements Organizer is an unofficial companion app for RetroAchievements.org, allowing you to track your gaming progress and achievements across retro games.',
-              style: TextStyle(
-                color: AppColors.textLight,
-                fontSize: 16,
-              ),
+              'RetroAchievements library is an unofficial companion app for RetroAchievements.org, allowing you to track your gaming progress and achievements across retro games.',
+              style: TextStyle(color: AppColors.textLight, fontSize: 16),
             ),
             const SizedBox(height: 24),
-            
+
             // Disclaimer
             const Text(
               'Disclaimer',
@@ -98,13 +88,10 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 8),
             const Text(
               'This app is not affiliated with or endorsed by RetroAchievements.org. All game data and achievements are the property of their respective owners.',
-              style: TextStyle(
-                color: AppColors.textLight,
-                fontSize: 16,
-              ),
+              style: TextStyle(color: AppColors.textLight, fontSize: 16),
             ),
             const SizedBox(height: 24),
-            
+
             // Contact
             const Text(
               'Contact & Support',
@@ -116,14 +103,11 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'For support or feature requests, please contact us at support@retroachievementsorganizer.com',
-              style: TextStyle(
-                color: AppColors.textLight,
-                fontSize: 16,
-              ),
+              'For support or feature requests, please contact us at support@retroachievementslibrary.com',
+              style: TextStyle(color: AppColors.textLight, fontSize: 16),
             ),
             const SizedBox(height: 40),
-            
+
             // Return button
             Center(
               child: ElevatedButton(
@@ -138,10 +122,7 @@ class AboutScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Return to Dashboard',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),

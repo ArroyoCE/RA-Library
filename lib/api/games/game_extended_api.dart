@@ -3,32 +3,30 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:retroachievements_organizer/constants/api_constants.dart';
+import 'package:retroachievements_library/constants/api_constants.dart';
 
 class GameExtendedApi {
-  Future<Map<String, dynamic>> getGameExtended(String gameId, String apiKey) async {
+  Future<Map<String, dynamic>> getGameExtended(
+    String gameId,
+    String apiKey,
+  ) async {
     try {
       final url = ApiConstants.getGameExtendedUrl(gameId, apiKey);
       final response = await http.get(Uri.parse(url));
-      
+
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-        return {
-          'success': true,
-          'data': decodedResponse,
-        };
+        return {'success': true, 'data': decodedResponse};
       } else {
         return {
           'success': false,
-          'error': 'Failed to load extended game details: ${response.statusCode}',
+          'error':
+              'Failed to load extended game details: ${response.statusCode}',
         };
       }
     } catch (e) {
       debugPrint('Error getting extended game details: $e');
-      return {
-        'success': false,
-        'error': e.toString(),
-      };
+      return {'success': false, 'error': e.toString()};
     }
   }
 }

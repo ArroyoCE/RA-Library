@@ -1,7 +1,7 @@
 // lib/screens/consoles/components/consoles_header.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class ConsolesHeader extends StatelessWidget {
   final VoidCallback onViewToggle;
@@ -36,16 +36,23 @@ class ConsolesHeader extends StatelessWidget {
             IconButton(
               icon: Icon(
                 isGridView ? Icons.view_list : Icons.grid_view,
-                color: isUpdating ? AppColors.textLight.withValues(alpha: 0.3) : AppColors.primary,
+                color:
+                    isUpdating
+                        ? AppColors.textLight.withValues(alpha: 0.3)
+                        : AppColors.primary,
               ),
               onPressed: isUpdating ? null : onViewToggle,
-              tooltip: isGridView ? 'Switch to list view' : 'Switch to grid view',
+              tooltip:
+                  isGridView ? 'Switch to list view' : 'Switch to grid view',
             ),
             // Refresh button
             IconButton(
               icon: Icon(
-                Icons.refresh, 
-                color: isUpdating ? AppColors.textLight.withValues(alpha: 0.3) : AppColors.primary,
+                Icons.refresh,
+                color:
+                    isUpdating
+                        ? AppColors.textLight.withValues(alpha: 0.3)
+                        : AppColors.primary,
               ),
               onPressed: isUpdating ? null : onRefresh,
               tooltip: 'Refresh consoles',

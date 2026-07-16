@@ -2,21 +2,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/providers/states/user/completed_games_state_provider.dart';
-import 'package:retroachievements_organizer/providers/states/user/recently_played_state_provider.dart';
-import 'package:retroachievements_organizer/providers/states/user/user_awards_state_provider.dart';
-import 'package:retroachievements_organizer/providers/states/user/user_summary_state_provider.dart';
-import 'package:retroachievements_organizer/screens/dashboard/components/awards_carousel.dart';
-import 'package:retroachievements_organizer/screens/dashboard/components/completion_progress.dart';
-import 'package:retroachievements_organizer/screens/dashboard/components/dashboard_header.dart';
-import 'package:retroachievements_organizer/screens/dashboard/components/recently_played_games.dart';
-import 'package:retroachievements_organizer/screens/dashboard/components/user_profile_card.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/providers/states/user/completed_games_state_provider.dart';
+import 'package:retroachievements_library/providers/states/user/recently_played_state_provider.dart';
+import 'package:retroachievements_library/providers/states/user/user_awards_state_provider.dart';
+import 'package:retroachievements_library/providers/states/user/user_summary_state_provider.dart';
+import 'package:retroachievements_library/screens/dashboard/components/awards_carousel.dart';
+import 'package:retroachievements_library/screens/dashboard/components/completion_progress.dart';
+import 'package:retroachievements_library/screens/dashboard/components/dashboard_header.dart';
+import 'package:retroachievements_library/screens/dashboard/components/recently_played_games.dart';
+import 'package:retroachievements_library/screens/dashboard/components/user_profile_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-export 'package:retroachievements_organizer/screens/dashboard/dashboard_screen.dart';
-
+export 'package:retroachievements_library/screens/dashboard/dashboard_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   final Widget child;
@@ -27,7 +26,8 @@ class DashboardScreen extends ConsumerStatefulWidget {
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends ConsumerState<DashboardScreen> with AutomaticKeepAliveClientMixin {
+class _DashboardScreenState extends ConsumerState<DashboardScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -46,11 +46,12 @@ class DashboardContent extends ConsumerStatefulWidget {
   ConsumerState<DashboardContent> createState() => _DashboardContentState();
 }
 
-class _DashboardContentState extends ConsumerState<DashboardContent> with AutomaticKeepAliveClientMixin {
+class _DashboardContentState extends ConsumerState<DashboardContent>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
+
     // Watch all necessary state providers
     final userState = ref.watch(authStateProvider);
     final userSummaryState = ref.watch(userSummaryStateProvider);
@@ -58,25 +59,31 @@ class _DashboardContentState extends ConsumerState<DashboardContent> with Automa
     final completedGamesState = ref.watch(completedGamesStateProvider);
     final recentlyPlayedState = ref.watch(recentlyPlayedStateProvider);
 
-
     // Determine if loading
-    final isLoading = userSummaryState.isLoading || 
-                    userAwardsState.isLoading || 
-                    completedGamesState.isLoading || 
-                    recentlyPlayedState.isLoading;
-    
+    final isLoading =
+        userSummaryState.isLoading ||
+        userAwardsState.isLoading ||
+        completedGamesState.isLoading ||
+        recentlyPlayedState.isLoading;
+
     // Get last updated timestamp (use the latest from all providers)
     final lastUpdated = [
       userSummaryState.lastUpdated,
       userAwardsState.lastUpdated,
       completedGamesState.lastUpdated,
       recentlyPlayedState.lastUpdated,
-    ].reduce((value, element) => 
-      (value == null || (element != null && element.isAfter(value))) ? element : value);
-    
-        return isLoading
-      ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-      : RefreshIndicator(
+    ].reduce(
+      (value, element) =>
+          (value == null || (element != null && element.isAfter(value)))
+              ? element
+              : value,
+    );
+
+    return isLoading
+        ? const Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        )
+        : RefreshIndicator(
           onRefresh: () => _refreshAllData(ref),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -87,38 +94,41 @@ class _DashboardContentState extends ConsumerState<DashboardContent> with Automa
                 children: [
                   // Dashboard header with title and last updated
                   DashboardHeader(
-                    lastUpdated: lastUpdated, 
+                    lastUpdated: lastUpdated,
                     onRefresh: () => _refreshAllData(ref),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // User Profile Card
                   if (userState.userProfile != null)
                     UserProfileCard(
-                      userState: userState, 
+                      userState: userState,
                       userSummary: userSummaryState.data,
                       userAwards: userAwardsState.data,
                     ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Recent Awards
-                  if (userAwardsState.data != null && 
+                  if (userAwardsState.data != null &&
                       userAwardsState.data!.visibleUserAwards.isNotEmpty)
-                    AwardsCarousel(awards: userAwardsState.data!.visibleUserAwards),
-                    
+                    AwardsCarousel(
+                      awards: userAwardsState.data!.visibleUserAwards,
+                    ),
+
                   const SizedBox(height: 24),
-                  
+
                   // Recently Played Games
-                  if (recentlyPlayedState.data != null && recentlyPlayedState.data!.isNotEmpty)
+                  if (recentlyPlayedState.data != null &&
+                      recentlyPlayedState.data!.isNotEmpty)
                     RecentlyPlayedGames(
                       userSummary: userSummaryState.data,
                       recentlyPlayed: recentlyPlayedState.data!,
                     ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Game Completion Progress
                   if (completedGamesState.data != null)
                     CompletionProgressList(
@@ -131,26 +141,27 @@ class _DashboardContentState extends ConsumerState<DashboardContent> with Automa
         );
   }
 
-
-
-  
-
-
   Future<void> _refreshAllData(WidgetRef ref) async {
     // Check for authentication
     final authState = ref.read(authStateProvider);
-    if (!authState.isAuthenticated || authState.username == null || authState.apiKey == null) {
+    if (!authState.isAuthenticated ||
+        authState.username == null ||
+        authState.apiKey == null) {
       return;
     }
-    
+
     // Reload all data with force refresh = true
     await Future.wait([
       ref.read(userSummaryStateProvider.notifier).loadData(forceRefresh: true),
       ref.read(userAwardsStateProvider.notifier).loadData(forceRefresh: true),
-      ref.read(completedGamesStateProvider.notifier).loadData(forceRefresh: true),
-      ref.read(recentlyPlayedStateProvider.notifier).loadData(forceRefresh: true),
+      ref
+          .read(completedGamesStateProvider.notifier)
+          .loadData(forceRefresh: true),
+      ref
+          .read(recentlyPlayedStateProvider.notifier)
+          .loadData(forceRefresh: true),
     ]);
-    
+
     // You can still save last refresh time if needed using SharedPreferences
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -160,8 +171,7 @@ class _DashboardContentState extends ConsumerState<DashboardContent> with Automa
       // Ignore errors
     }
   }
-  
-    @override
-  bool get wantKeepAlive => true;
 
+  @override
+  bool get wantKeepAlive => true;
 }

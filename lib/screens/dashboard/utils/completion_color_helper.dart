@@ -1,7 +1,7 @@
 // lib/screens/dashboard/utils/completion_color_helper.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class CompletionColorHelper {
   static Color getCompletionColor(double percentage) {

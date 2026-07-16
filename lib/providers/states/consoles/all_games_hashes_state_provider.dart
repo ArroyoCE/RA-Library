@@ -1,10 +1,10 @@
 // lib/providers/states/all_games_hashes_state_provider.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/models/consoles/all_game_hash.dart';
-import 'package:retroachievements_organizer/providers/repositories/consoles/all_games_hashes_repository_provider.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/consoles/all_games_hashes_repository.dart';
+import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
+import 'package:retroachievements_library/providers/repositories/consoles/all_games_hashes_repository_provider.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/repositories/consoles/all_games_hashes_repository.dart';
 
 class GamesHashesState {
   final bool isLoading;
@@ -42,10 +42,13 @@ class GamesHashesNotifier extends StateNotifier<GamesHashesState> {
   final AllGamesHashesRepository allGamesHashesRepository;
   final String apiKey;
 
-  GamesHashesNotifier(this.allGamesHashesRepository, this.apiKey) 
-      : super(GamesHashesState());
+  GamesHashesNotifier(this.allGamesHashesRepository, this.apiKey)
+    : super(GamesHashesState());
 
-  Future<void> loadGameList(String systemId, {bool forceRefresh = false}) async {
+  Future<void> loadGameList(
+    String systemId, {
+    bool forceRefresh = false,
+  }) async {
     if (apiKey.isEmpty) {
       state = state.copyWith(
         errorMessage: 'No API key available',
@@ -59,8 +62,8 @@ class GamesHashesNotifier extends StateNotifier<GamesHashesState> {
     try {
       final gamesList = await allGamesHashesRepository.getGameList(
         systemId,
-        apiKey, 
-        useCache: !forceRefresh
+        apiKey,
+        useCache: !forceRefresh,
       );
 
       if (gamesList != null) {
@@ -84,12 +87,10 @@ class GamesHashesNotifier extends StateNotifier<GamesHashesState> {
   }
 }
 
-final gamesHashesStateProvider = StateNotifierProvider<GamesHashesNotifier, GamesHashesState>((ref) {
-  final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(allGamesHashesRepositoryProvider);
-  
-  return GamesHashesNotifier(
-    repository, 
-    authState.apiKey ?? ''
-  );
-});
+final gamesHashesStateProvider =
+    StateNotifierProvider<GamesHashesNotifier, GamesHashesState>((ref) {
+      final authState = ref.watch(authStateProvider);
+      final repository = ref.watch(allGamesHashesRepositoryProvider);
+
+      return GamesHashesNotifier(repository, authState.apiKey ?? '');
+    });

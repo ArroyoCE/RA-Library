@@ -1,17 +1,14 @@
 // lib/screens/dashboard/components/awards_carousel.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/models/user/user_awards_model.dart';
-import 'package:retroachievements_organizer/screens/dashboard/widgets/award_item.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/models/user/user_awards_model.dart';
+import 'package:retroachievements_library/screens/dashboard/widgets/award_item.dart';
 
 class AwardsCarousel extends StatefulWidget {
   final List<UserAward> awards;
 
-  const AwardsCarousel({
-    super.key,
-    required this.awards,
-  });
+  const AwardsCarousel({super.key, required this.awards});
 
   @override
   State<AwardsCarousel> createState() => _AwardsCarouselState();
@@ -19,7 +16,7 @@ class AwardsCarousel extends StatefulWidget {
 
 class _AwardsCarouselState extends State<AwardsCarousel> {
   final ScrollController _awardsScrollController = ScrollController();
-  
+
   @override
   void dispose() {
     _awardsScrollController.dispose();
@@ -33,7 +30,9 @@ class _AwardsCarouselState extends State<AwardsCarousel> {
     sortedAwards.sort((a, b) {
       final aDate = DateTime.parse(a.awardedAt);
       final bDate = DateTime.parse(b.awardedAt);
-      return bDate.compareTo(aDate); // Reverse the comparison for descending order (newest first)
+      return bDate.compareTo(
+        aDate,
+      ); // Reverse the comparison for descending order (newest first)
     });
 
     return Column(
@@ -54,7 +53,11 @@ class _AwardsCarouselState extends State<AwardsCarousel> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, size: 14, color: AppColors.primary),
+                  icon: const Icon(
+                    Icons.arrow_back_ios,
+                    size: 14,
+                    color: AppColors.primary,
+                  ),
                   onPressed: () {
                     _awardsScrollController.animateTo(
                       _awardsScrollController.offset - 150,
@@ -64,7 +67,11 @@ class _AwardsCarouselState extends State<AwardsCarousel> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.primary),
+                  icon: const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 14,
+                    color: AppColors.primary,
+                  ),
                   onPressed: () {
                     _awardsScrollController.animateTo(
                       _awardsScrollController.offset + 150,

@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/models/user/user_awards_model.dart';
-import 'package:retroachievements_organizer/providers/repositories/user/user_stats_repository_provider.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/user/user_stats_repository.dart';
+import 'package:retroachievements_library/models/user/user_awards_model.dart';
+import 'package:retroachievements_library/providers/repositories/user/user_stats_repository_provider.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/repositories/user/user_stats_repository.dart';
 
 class UserAwardsState {
   final bool isLoading;
@@ -37,8 +37,8 @@ class UserAwardsNotifier extends StateNotifier<UserAwardsState> {
   final String username;
   final String apiKey;
 
-  UserAwardsNotifier(this.repository, this.username, this.apiKey) 
-      : super(UserAwardsState()) {
+  UserAwardsNotifier(this.repository, this.username, this.apiKey)
+    : super(UserAwardsState()) {
     if (username.isNotEmpty && apiKey.isNotEmpty) {
       loadData();
     }
@@ -57,9 +57,9 @@ class UserAwardsNotifier extends StateNotifier<UserAwardsState> {
 
     try {
       final userAwards = await repository.getUserAwards(
-        username, 
-        apiKey, 
-        useCache: !forceRefresh
+        username,
+        apiKey,
+        useCache: !forceRefresh,
       );
 
       if (userAwards != null) {
@@ -83,13 +83,14 @@ class UserAwardsNotifier extends StateNotifier<UserAwardsState> {
   }
 }
 
-final userAwardsStateProvider = StateNotifierProvider<UserAwardsNotifier, UserAwardsState>((ref) {
-  final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(userStatsRepositoryProvider);
-  
-  return UserAwardsNotifier(
-    repository, 
-    authState.username ?? '', 
-    authState.apiKey ?? ''
-  );
-});
+final userAwardsStateProvider =
+    StateNotifierProvider<UserAwardsNotifier, UserAwardsState>((ref) {
+      final authState = ref.watch(authStateProvider);
+      final repository = ref.watch(userStatsRepositoryProvider);
+
+      return UserAwardsNotifier(
+        repository,
+        authState.username ?? '',
+        authState.apiKey ?? '',
+      );
+    });

@@ -1,10 +1,10 @@
 // lib/screens/games/components/games_grid.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/models/consoles/all_game_hash.dart';
-import 'package:retroachievements_organizer/models/local/hash_match_model.dart';
-import 'package:retroachievements_organizer/screens/games/widgets/game_grid_item.dart';
-import 'package:retroachievements_organizer/widgets/generic_grid_display.dart';
+import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
+import 'package:retroachievements_library/models/local/hash_match_model.dart';
+import 'package:retroachievements_library/screens/games/widgets/game_grid_item.dart';
+import 'package:retroachievements_library/widgets/generic_grid_display.dart';
 
 class GamesGrid extends StatelessWidget {
   final List<GameHash> games;
@@ -29,7 +29,8 @@ class GamesGrid extends StatelessWidget {
       mainAxisSpacing: 16,
       childAspectRatio: 0.7,
       itemBuilder: (context, game, index) {
-        final matchStatus = matchStatuses != null ? matchStatuses![game.id] : null;
+        final matchStatus =
+            matchStatuses != null ? matchStatuses![game.id] : null;
         return GameGridItem(
           game: game,
           onTap: () => onGameSelected(game),

@@ -1,7 +1,7 @@
 // lib/screens/consoles/utils/consoles_helper.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class ConsolesHelper {
   // Get appropriate color based on completion percentage
@@ -18,7 +18,7 @@ class ConsolesHelper {
       return AppColors.error; // Red for very low completion
     }
   }
-  
+
   // Convert hash method to descriptive string
   static String hashMethodToString(String hashMethod) {
     switch (hashMethod.toLowerCase()) {

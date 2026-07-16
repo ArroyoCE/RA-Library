@@ -3,24 +3,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/providers/states/consoles/consoles_updating_state_provider.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/providers/states/consoles/consoles_updating_state_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 class MainAppScreen extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
-  const MainAppScreen({
-    super.key,
-    required this.navigationShell,
-  });
+  const MainAppScreen({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(authStateProvider);
     final isUpdating = ref.watch(consolesUpdatingStateProvider);
-    
+
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: PreferredSize(
@@ -30,11 +27,7 @@ class MainAppScreen extends ConsumerWidget {
             backgroundColor: AppColors.appBarBackground,
             title: Row(
               children: [
-                Image.asset(
-                  'images/ra-icon.png',
-                  height: 24,
-                  width: 24,
-                ),
+                Image.asset('images/ra-icon.png', height: 24, width: 24),
                 const SizedBox(width: 8),
                 const Text(
                   AppStrings.appName,
@@ -48,12 +41,15 @@ class MainAppScreen extends ConsumerWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.logout, color: Colors.white),
-                onPressed: isUpdating ? null : () async {
-                  await ref.read(authStateProvider.notifier).logout();
-                  if (context.mounted) {
-                    context.go('/login');
-                  }
-                },
+                onPressed:
+                    isUpdating
+                        ? null
+                        : () async {
+                          await ref.read(authStateProvider.notifier).logout();
+                          if (context.mounted) {
+                            context.go('/login');
+                          }
+                        },
               ),
               const SizedBox(
                 width: 138,
@@ -84,28 +80,55 @@ class MainAppScreen extends ConsumerWidget {
                 destinations: const [
                   NavigationRailDestination(
                     icon: Icon(Icons.dashboard, color: AppColors.primary),
-                    selectedIcon: Icon(Icons.dashboard, color: AppColors.primary),
-                    label: Text(AppStrings.dashboard, style: TextStyle(color: AppColors.textLight)),
+                    selectedIcon: Icon(
+                      Icons.dashboard,
+                      color: AppColors.primary,
+                    ),
+                    label: Text(
+                      AppStrings.dashboard,
+                      style: TextStyle(color: AppColors.textLight),
+                    ),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.videogame_asset, color: AppColors.primary),
-                    selectedIcon: Icon(Icons.videogame_asset, color: AppColors.primary),
-                    label: Text(AppStrings.myGames, style: TextStyle(color: AppColors.textLight)),
+                    selectedIcon: Icon(
+                      Icons.videogame_asset,
+                      color: AppColors.primary,
+                    ),
+                    label: Text(
+                      AppStrings.myGames,
+                      style: TextStyle(color: AppColors.textLight),
+                    ),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.emoji_events, color: AppColors.primary),
-                    selectedIcon: Icon(Icons.emoji_events, color: AppColors.primary),
-                    label: Text(AppStrings.myAchievements, style: TextStyle(color: AppColors.textLight)),
+                    selectedIcon: Icon(
+                      Icons.emoji_events,
+                      color: AppColors.primary,
+                    ),
+                    label: Text(
+                      AppStrings.myAchievements,
+                      style: TextStyle(color: AppColors.textLight),
+                    ),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.tag, color: AppColors.primary),
                     selectedIcon: Icon(Icons.tag, color: AppColors.primary),
-                    label: Text(AppStrings.hashCheck, style: TextStyle(color: AppColors.textLight)),
+                    label: Text(
+                      AppStrings.hashCheck,
+                      style: TextStyle(color: AppColors.textLight),
+                    ),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.settings, color: AppColors.primary),
-                    selectedIcon: Icon(Icons.settings, color: AppColors.primary),
-                    label: Text(AppStrings.settings, style: TextStyle(color: AppColors.textLight)),
+                    selectedIcon: Icon(
+                      Icons.settings,
+                      color: AppColors.primary,
+                    ),
+                    label: Text(
+                      AppStrings.settings,
+                      style: TextStyle(color: AppColors.textLight),
+                    ),
                   ),
                 ],
                 selectedLabelTextStyle: const TextStyle(
@@ -118,7 +141,7 @@ class MainAppScreen extends ConsumerWidget {
               ),
             ),
           ),
-          
+
           // Main content - Use the navigationShell to display the current branch
           Expanded(
             child: Padding(

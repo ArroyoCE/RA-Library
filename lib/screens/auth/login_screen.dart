@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/widgets/common_widgets.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/widgets/common_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -33,24 +33,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       debugPrint('Could not launch $url');
     }
   }
+
   // Handle login
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       // Get username and API key
       final username = _usernameController.text.trim();
       final apiKey = _apiKeyController.text.trim();
-      
+
       // Attempt login using provider
-      await ref.read(authStateProvider.notifier).login(
-        username,
-        apiKey,
-        _rememberMe,
-      );
-      
+      await ref
+          .read(authStateProvider.notifier)
+          .login(username, apiKey, _rememberMe);
+
       // Check if login was successful
       if (mounted) {
         final userState = ref.read(authStateProvider);
-        
+
         if (userState.isAuthenticated) {
           // Show success snackbar
           ScaffoldMessenger.of(context).showSnackBar(
@@ -59,7 +58,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               backgroundColor: AppColors.success,
             ),
           );
-          
+
           // Navigate to home screen
           context.go('/');
         } else if (userState.errorMessage != null) {
@@ -79,17 +78,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     // Watch the user state to react to changes
     final userState = ref.watch(authStateProvider);
-    
+
     // Populate username field if available
     if (userState.username != null && _usernameController.text.isEmpty) {
       _usernameController.text = userState.username!;
     }
-    
+
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
-      appBar: const RAAppBar(
-        title: AppStrings.appName,
-      ),
+      appBar: const RAAppBar(title: AppStrings.appName),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -120,7 +117,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 40),
-                  
+
                   // Username field
                   RATextField(
                     controller: _usernameController,
@@ -134,7 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // API Key field
                   RATextField(
                     controller: _apiKeyController,
@@ -149,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Remember me checkbox and forgot password link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -163,14 +160,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 _rememberMe = value ?? false;
                               });
                             },
-                            fillColor: WidgetStateProperty.resolveWith<Color>(
-                              (Set<WidgetState> states) {
-                                if (states.contains(WidgetState.selected)) {
-                                  return AppColors.primary;
-                                }
-                                return Colors.grey;
-                              },
-                            ),
+                            fillColor: WidgetStateProperty.resolveWith<Color>((
+                              Set<WidgetState> states,
+                            ) {
+                              if (states.contains(WidgetState.selected)) {
+                                return AppColors.primary;
+                              }
+                              return Colors.grey;
+                            }),
                             checkColor: AppColors.darkBackground,
                           ),
                           const Text(
@@ -184,18 +181,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Login button
                   RAPrimaryButton(
                     text: AppStrings.login,
                     onPressed: _handleLogin,
                     isLoading: userState.isLoading,
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Register link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -220,16 +217,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Updated disclaimer text
                   const Text(
                     AppStrings.apiKeyDisclaimer,
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: AppColors.primary, fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ],

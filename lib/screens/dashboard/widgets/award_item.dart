@@ -1,17 +1,14 @@
 // lib/screens/dashboard/widgets/award_item.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/models/user/user_awards_model.dart';
-import 'package:retroachievements_organizer/screens/dashboard/utils/dashboard_formatter.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/models/user/user_awards_model.dart';
+import 'package:retroachievements_library/screens/dashboard/utils/dashboard_formatter.dart';
 
 class AwardItem extends StatelessWidget {
   final UserAward award;
 
-  const AwardItem({
-    super.key, 
-    required this.award,
-  });
+  const AwardItem({super.key, required this.award});
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +70,7 @@ class AwardItem extends StatelessWidget {
             )
           else
             Icon(awardIcon, color: awardColor, size: 40),
-          
+
           const SizedBox(height: 8),
           Text(
             award.title,
@@ -89,20 +86,14 @@ class AwardItem extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             award.awardType,
-            style: const TextStyle(
-              color: AppColors.textSubtle,
-              fontSize: 10,
-            ),
+            style: const TextStyle(color: AppColors.textSubtle, fontSize: 10),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           if (award.awardedAt.isNotEmpty)
             Text(
               DashboardFormatter.formatShortDate(award.awardedAt),
-              style: const TextStyle(
-                color: AppColors.textSubtle,
-                fontSize: 10,
-              ),
+              style: const TextStyle(color: AppColors.textSubtle, fontSize: 10),
             ),
         ],
       ),

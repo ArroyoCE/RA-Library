@@ -4,11 +4,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/models/user/all_completion_model.dart';
-import 'package:retroachievements_organizer/screens/dashboard/utils/completion_color_helper.dart';
-import 'package:retroachievements_organizer/screens/dashboard/utils/dashboard_formatter.dart';
-import 'package:retroachievements_organizer/services/storage_service.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/models/user/all_completion_model.dart';
+import 'package:retroachievements_library/screens/dashboard/utils/completion_color_helper.dart';
+import 'package:retroachievements_library/screens/dashboard/utils/dashboard_formatter.dart';
+import 'package:retroachievements_library/services/storage_service.dart';
 
 class GamesList extends ConsumerStatefulWidget {
   final List<dynamic> games;
@@ -47,10 +47,11 @@ class _GamesListState extends ConsumerState<GamesList> {
     final numAwarded = game.numAwardedHardcore;
     final percentage = game.getCompletionPercentage();
     final highestAward = game.highestAwardKind;
-    final mostRecentDate = game.mostRecentAwardedDate.isNotEmpty 
-        ? DateTime.parse(game.mostRecentAwardedDate) 
-        : null;
-    
+    final mostRecentDate =
+        game.mostRecentAwardedDate.isNotEmpty
+            ? DateTime.parse(game.mostRecentAwardedDate)
+            : null;
+
     final progressColor = CompletionColorHelper.getCompletionColor(percentage);
 
     return Container(
@@ -88,33 +89,40 @@ class _GamesListState extends ConsumerState<GamesList> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: _gameIconPaths.containsKey(gameId) && _gameIconPaths[gameId] != null
-                      ? Image.file(
-                          File(_gameIconPaths[gameId]!),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
-                        )
-                      : FutureBuilder<String?>(
-                          future: _getGameIcon(gameId, iconPath),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.done && 
-                                snapshot.hasData && 
-                                snapshot.data != null) {
-                              return Image.file(
-                                File(snapshot.data!),
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
-                              );
-                            } else {
-                              return _buildPlaceholder();
-                            }
-                          },
-                        ),
+                    child:
+                        _gameIconPaths.containsKey(gameId) &&
+                                _gameIconPaths[gameId] != null
+                            ? Image.file(
+                              File(_gameIconPaths[gameId]!),
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (context, error, stackTrace) =>
+                                      _buildPlaceholder(),
+                            )
+                            : FutureBuilder<String?>(
+                              future: _getGameIcon(gameId, iconPath),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                        ConnectionState.done &&
+                                    snapshot.hasData &&
+                                    snapshot.data != null) {
+                                  return Image.file(
+                                    File(snapshot.data!),
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            _buildPlaceholder(),
+                                  );
+                                } else {
+                                  return _buildPlaceholder();
+                                }
+                              },
+                            ),
                   ),
                 ),
-                
+
                 const SizedBox(width: 16),
-                
+
                 // 2. Title & Console Info
                 Expanded(
                   flex: 3,
@@ -135,7 +143,10 @@ class _GamesListState extends ConsumerState<GamesList> {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
@@ -158,7 +169,7 @@ class _GamesListState extends ConsumerState<GamesList> {
                                 fontSize: 11,
                               ),
                             ),
-                          ]
+                          ],
                         ],
                       ),
                     ],
@@ -205,7 +216,9 @@ class _GamesListState extends ConsumerState<GamesList> {
                           child: LinearProgressIndicator(
                             value: percentage / 100,
                             backgroundColor: Colors.transparent,
-                            valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              progressColor,
+                            ),
                           ),
                         ),
                       ),
@@ -218,9 +231,10 @@ class _GamesListState extends ConsumerState<GamesList> {
                 // 4. Award Badge
                 SizedBox(
                   width: 32,
-                  child: highestAward.isNotEmpty 
-                      ? _buildAwardBadge(highestAward)
-                      : const SizedBox.shrink(),
+                  child:
+                      highestAward.isNotEmpty
+                          ? _buildAwardBadge(highestAward)
+                          : const SizedBox.shrink(),
                 ),
               ],
             ),
@@ -240,13 +254,13 @@ class _GamesListState extends ConsumerState<GamesList> {
       ),
     );
   }
-  
+
   // Create a more visually distinct award badge
   Widget _buildAwardBadge(String awardKind) {
     IconData icon;
     Color color;
     String tooltip;
-    
+
     if (awardKind == 'mastery') {
       icon = Icons.workspace_premium;
       color = Colors.amber;
@@ -260,7 +274,7 @@ class _GamesListState extends ConsumerState<GamesList> {
       color = AppColors.info;
       tooltip = 'Completed';
     }
-    
+
     return Tooltip(
       message: tooltip,
       child: Container(
@@ -269,42 +283,39 @@ class _GamesListState extends ConsumerState<GamesList> {
           color: color.withValues(alpha: 0.1),
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          icon,
-          color: color,
-          size: 20,
-        ),
+        child: Icon(icon, color: color, size: 20),
       ),
     );
   }
-  
+
   Future<String?> _getGameIcon(int gameId, String iconPath) async {
     // Check cache first
     if (_gameIconPaths.containsKey(gameId)) {
       return _gameIconPaths[gameId];
     }
-    
+
     // Otherwise fetch and cache
     final storageService = ref.read(storageServiceProvider);
-    
+
     // Make sure the icon path starts with '/' for API URL consistency
-    final normalizedIconPath = iconPath.startsWith('/') ? iconPath : '/$iconPath';
-    
+    final normalizedIconPath =
+        iconPath.startsWith('/') ? iconPath : '/$iconPath';
+
     final localPath = await storageService.saveImageFromUrl(
       'https://retroachievements.org$normalizedIconPath',
       'game_images',
       'game_$gameId.png',
     );
-    
+
     if (mounted) {
       setState(() {
         _gameIconPaths[gameId] = localPath;
       });
     }
-    
+
     return localPath;
   }
-  
+
   String _formatDate(DateTime date) {
     return DashboardFormatter.formatDate(date);
   }

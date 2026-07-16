@@ -1,6 +1,6 @@
 // lib/models/user_state.dart
 
-import 'package:retroachievements_organizer/models/user/user_profile_model.dart';
+import 'package:retroachievements_library/models/user/user_profile_model.dart';
 
 class UserState {
   final bool isAuthenticated;
@@ -9,8 +9,8 @@ class UserState {
   final String? apiKey;
   final String? errorMessage;
   final bool autoLogin;
-  final UserProfile? userProfile; 
-  final String? userPicPath; 
+  final UserProfile? userProfile;
+  final String? userPicPath;
 
   const UserState({
     this.isAuthenticated = false,
@@ -22,7 +22,6 @@ class UserState {
     this.userProfile,
     this.userPicPath,
   });
-
 
   UserState copyWith({
     bool? isAuthenticated,
@@ -45,7 +44,6 @@ class UserState {
       userPicPath: userPicPath ?? this.userPicPath,
     );
   }
-
 
   UserState clearError() {
     return UserState(

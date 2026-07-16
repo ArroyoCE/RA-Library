@@ -1,11 +1,11 @@
 // lib/screens/games/widgets/game_list_item.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/models/consoles/all_game_hash.dart';
-import 'package:retroachievements_organizer/models/local/hash_match_model.dart';
-import 'package:retroachievements_organizer/screens/games/utils/games_helper.dart';
-import 'package:retroachievements_organizer/screens/games/utils/hash_matching.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
+import 'package:retroachievements_library/models/local/hash_match_model.dart';
+import 'package:retroachievements_library/screens/games/utils/games_helper.dart';
+import 'package:retroachievements_library/screens/games/utils/hash_matching.dart';
 
 class GameListItem extends StatelessWidget {
   final GameHash game;
@@ -26,31 +26,27 @@ class GameListItem extends StatelessWidget {
     // Determine match status color and text
     Color statusColor = AppColors.textSubtle;
     String statusText = 'Checking...';
-    
+
     if (matchStatus != null) {
       statusColor = HashMatchingService.getMatchStatusColor(matchStatus!);
       statusText = HashMatchingService.getMatchStatusText(matchStatus!);
     }
-    
+
     return Card(
       color: AppColors.cardBackground,
       elevation: 4,
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
-        onTap:  isHashingInProgress ? null : onTap,
+        onTap: isHashingInProgress ? null : onTap,
         borderRadius: BorderRadius.circular(4),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
               // Game icon
-              SizedBox(
-                width: 70,
-                height: 70,
-                child: _buildGameImage(),
-              ),
+              SizedBox(width: 70, height: 70, child: _buildGameImage()),
               const SizedBox(width: 16),
-              
+
               // Game info
               Expanded(
                 child: Column(
@@ -66,9 +62,9 @@ class GameListItem extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    
+
                     const SizedBox(height: 4),
-                    
+
                     // Achievements count and points
                     Row(
                       children: [
@@ -87,22 +83,22 @@ class GameListItem extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 4),
-                    
+
                     // Match status and date modified
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: statusColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: statusColor,
-                              width: 1,
-                            ),
+                            border: Border.all(color: statusColor, width: 1),
                           ),
                           child: Text(
                             statusText,
@@ -113,10 +109,9 @@ class GameListItem extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
                       ],
                     ),
-                    
+
                     // Hash count
                     const SizedBox(height: 4),
                     Text(
@@ -129,7 +124,7 @@ class GameListItem extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // Right chevron
               const Icon(
                 Icons.chevron_right,
@@ -146,8 +141,9 @@ class GameListItem extends StatelessWidget {
   Widget _buildGameImage() {
     // Try to load image from network
     final hasImageIcon = game.imageIcon.isNotEmpty;
-    final imageUrl = hasImageIcon ? 'https://retroachievements.org${game.imageIcon}' : '';
-    
+    final imageUrl =
+        hasImageIcon ? 'https://retroachievements.org${game.imageIcon}' : '';
+
     if (hasImageIcon) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(4),
@@ -163,10 +159,14 @@ class GameListItem extends StatelessWidget {
             if (loadingProgress == null) return child;
             return Center(
               child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                    : null,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                value:
+                    loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppColors.primary,
+                ),
               ),
             );
           },
@@ -184,11 +184,7 @@ class GameListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: const Center(
-        child: Icon(
-          Icons.videogame_asset,
-          color: AppColors.primary,
-          size: 32,
-        ),
+        child: Icon(Icons.videogame_asset, color: AppColors.primary, size: 32),
       ),
     );
   }

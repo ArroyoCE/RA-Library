@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/models/games/game_extended_model.dart';
-import 'package:retroachievements_organizer/providers/states/games/user_game_progress_state_provider.dart';
-import 'package:retroachievements_organizer/screens/game_data/widgets/achievement_item.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/models/games/game_extended_model.dart';
+import 'package:retroachievements_library/providers/states/games/user_game_progress_state_provider.dart';
+import 'package:retroachievements_library/screens/game_data/widgets/achievement_item.dart';
 
 class GameDetailsTab extends ConsumerStatefulWidget {
   final GameExtended? gameExtended;
@@ -27,8 +27,10 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
 
   @override
   Widget build(BuildContext context) {
-    final userGameProgressState = ref.watch(userGameProgressProvider(widget.gameId));
-    
+    final userGameProgressState = ref.watch(
+      userGameProgressProvider(widget.gameId),
+    );
+
     if (userGameProgressState.isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: AppColors.primary),
@@ -39,44 +41,35 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
       return Center(
         child: Text(
           'Error loading achievements: ${userGameProgressState.errorMessage}',
-          style: const TextStyle(
-            color: AppColors.textLight,
-            fontSize: 16,
-          ),
+          style: const TextStyle(color: AppColors.textLight, fontSize: 16),
         ),
       );
     }
-    
+
     final userGameProgress = userGameProgressState.data;
-    
+
     if (userGameProgress == null) {
       if (widget.gameExtended == null) {
         return const Center(
           child: Text(
             'No detailed information available for this game.',
-            style: TextStyle(
-              color: AppColors.textLight,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: AppColors.textLight, fontSize: 16),
           ),
         );
       }
-      
+
       // Fall back to game extended data if user progress isn't available
       final achievements = widget.gameExtended!.getAchievementsList();
-      
+
       if (achievements.isEmpty) {
         return const Center(
           child: Text(
             'No achievements available for this game.',
-            style: TextStyle(
-              color: AppColors.textLight,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: AppColors.textLight, fontSize: 16),
           ),
         );
       }
-      
+
       // Just show the achievements without user progress
       return Column(
         children: [
@@ -89,17 +82,21 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
               itemCount: achievements.length,
               itemBuilder: (context, index) {
                 final achievement = achievements[index];
-                
+
                 // Check if we should show this achievement based on filter
-                final typeValue = achievement['Type'] ?? achievement['type'] ?? '';
-                if (_showOnlyMissable && typeValue.toString().toLowerCase() != 'missable' && typeValue.toString() != '3') {
+                final typeValue =
+                    achievement['Type'] ?? achievement['type'] ?? '';
+                if (_showOnlyMissable &&
+                    typeValue.toString().toLowerCase() != 'missable' &&
+                    typeValue.toString() != '3') {
                   return const SizedBox.shrink();
                 }
-                
+
                 return AchievementItem(
                   achievement: achievement,
                   isUnlocked: false,
-                  numDistinctPlayers: widget.gameExtended?.numDistinctPlayers ?? 0,
+                  numDistinctPlayers:
+                      widget.gameExtended?.numDistinctPlayers ?? 0,
                 );
               },
             ),
@@ -107,18 +104,15 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
         ],
       );
     }
-    
+
     // Use user game progress data
     final achievements = userGameProgress.getAchievementsList();
-    
+
     if (achievements.isEmpty) {
       return const Center(
         child: Text(
           'No achievements available for this game.',
-          style: TextStyle(
-            color: AppColors.textLight,
-            fontSize: 16,
-          ),
+          style: TextStyle(color: AppColors.textLight, fontSize: 16),
         ),
       );
     }
@@ -136,17 +130,20 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
             itemBuilder: (context, index) {
               final achievement = achievements[index];
               final isUnlocked = achievement['isUnlocked'] ?? false;
-              
+
               // Apply filters
               if (_hideUnlocked && isUnlocked) {
                 return const SizedBox.shrink();
               }
-              
-              final typeValue = achievement['Type'] ?? achievement['type'] ?? '';
-              if (_showOnlyMissable && typeValue.toString().toLowerCase() != 'missable' && typeValue.toString() != '3') {
+
+              final typeValue =
+                  achievement['Type'] ?? achievement['type'] ?? '';
+              if (_showOnlyMissable &&
+                  typeValue.toString().toLowerCase() != 'missable' &&
+                  typeValue.toString() != '3') {
                 return const SizedBox.shrink();
               }
-              
+
               return AchievementItem(
                 achievement: achievement,
                 isUnlocked: isUnlocked,
@@ -158,7 +155,7 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
       ],
     );
   }
-  
+
   Widget _buildFilterOptions({required bool hasUserProgress}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
@@ -166,13 +163,10 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
         children: [
           const Text(
             'Filters:',
-            style: TextStyle(
-              color: AppColors.textLight,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: AppColors.textLight, fontSize: 12),
           ),
           const SizedBox(width: 8),
-          
+
           // "Show only missable" filter (always visible)
           _buildFilterChip(
             label: 'Show Only Missable',
@@ -183,9 +177,9 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
               });
             },
           ),
-          
+
           const SizedBox(width: 8),
-          
+
           // "Hide unlocked" filter (only visible if user has progress)
           if (hasUserProgress)
             _buildFilterChip(
@@ -201,7 +195,7 @@ class _GameDetailsTabState extends ConsumerState<GameDetailsTab> {
       ),
     );
   }
-  
+
   Widget _buildFilterChip({
     required String label,
     required bool selected,

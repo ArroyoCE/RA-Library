@@ -1,14 +1,18 @@
 // lib/screens/achievements/components/achievement_filters.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/screens/achievements/utils/achievement_sorter.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/screens/achievements/utils/achievement_sorter.dart';
 
 class AchievementFilters extends StatefulWidget {
   final CompletionFilterStatus completionStatus;
   final Set<String> selectedPlatforms;
   final List<dynamic> games;
-  final Function({CompletionFilterStatus? completionStatus, Set<String>? selectedPlatforms}) onFilterChanged;
+  final Function({
+    CompletionFilterStatus? completionStatus,
+    Set<String>? selectedPlatforms,
+  })
+  onFilterChanged;
   final VoidCallback onClearFilters;
 
   const AchievementFilters({
@@ -44,9 +48,11 @@ class _AchievementFiltersState extends State<AchievementFilters> {
       }
     }
     final platforms = consoleNames.toList()..sort();
-    
+
     // Determine if any filters are active
-    final bool hasActiveFilters = widget.completionStatus != CompletionFilterStatus.all || widget.selectedPlatforms.isNotEmpty;
+    final bool hasActiveFilters =
+        widget.completionStatus != CompletionFilterStatus.all ||
+        widget.selectedPlatforms.isNotEmpty;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -71,33 +77,59 @@ class _AchievementFiltersState extends State<AchievementFilters> {
                   ActionChip(
                     visualDensity: VisualDensity.compact,
                     backgroundColor: AppColors.error.withValues(alpha: 0.1),
-                    side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
+                    side: BorderSide(
+                      color: AppColors.error.withValues(alpha: 0.3),
+                    ),
                     label: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.clear, size: 14, color: AppColors.error),
                         SizedBox(width: 4),
-                        Text('Clear', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold, fontSize: 12)),
+                        Text(
+                          'Clear',
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ),
                     onPressed: widget.onClearFilters,
                   ),
-                
+
                 // 2. Completion Status Chips
-                _buildCompletionChip('Show All', CompletionFilterStatus.all, Icons.list),
-                _buildCompletionChip('Completed', CompletionFilterStatus.completedOnly, Icons.emoji_events),
-                _buildCompletionChip('Unfinished', CompletionFilterStatus.hideCompleted, Icons.hourglass_empty),
+                _buildCompletionChip(
+                  'Show All',
+                  CompletionFilterStatus.all,
+                  Icons.list,
+                ),
+                _buildCompletionChip(
+                  'Completed',
+                  CompletionFilterStatus.completedOnly,
+                  Icons.emoji_events,
+                ),
+                _buildCompletionChip(
+                  'Unfinished',
+                  CompletionFilterStatus.hideCompleted,
+                  Icons.hourglass_empty,
+                ),
 
                 if (platforms.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     height: 24,
-                    child: VerticalDivider(color: Colors.white.withValues(alpha: 0.1), width: 1),
+                    child: VerticalDivider(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      width: 1,
+                    ),
                   ),
-                
+
                 // 3. Platform Chips
                 ...platforms.map((platform) {
-                  final isSelected = widget.selectedPlatforms.contains(platform);
+                  final isSelected = widget.selectedPlatforms.contains(
+                    platform,
+                  );
                   return FilterChip(
                     visualDensity: VisualDensity.compact,
                     label: Text(platform),
@@ -106,23 +138,30 @@ class _AchievementFiltersState extends State<AchievementFilters> {
                     checkmarkColor: AppColors.primary,
                     backgroundColor: AppColors.darkBackground,
                     side: BorderSide(
-                      color: isSelected 
-                          ? AppColors.primary.withValues(alpha: 0.5) 
-                          : Colors.white.withValues(alpha: 0.1),
+                      color:
+                          isSelected
+                              ? AppColors.primary.withValues(alpha: 0.5)
+                              : Colors.white.withValues(alpha: 0.1),
                     ),
                     labelStyle: TextStyle(
                       fontSize: 12, // Smaller font for platforms
-                      color: isSelected ? AppColors.primary : AppColors.textLight,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      color:
+                          isSelected ? AppColors.primary : AppColors.textLight,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                     onSelected: (selected) {
-                      final newSelectedPlatforms = Set<String>.from(widget.selectedPlatforms);
+                      final newSelectedPlatforms = Set<String>.from(
+                        widget.selectedPlatforms,
+                      );
                       if (selected) {
                         newSelectedPlatforms.add(platform);
                       } else {
                         newSelectedPlatforms.remove(platform);
                       }
-                      widget.onFilterChanged(selectedPlatforms: newSelectedPlatforms);
+                      widget.onFilterChanged(
+                        selectedPlatforms: newSelectedPlatforms,
+                      );
                     },
                   );
                 }),
@@ -134,7 +173,11 @@ class _AchievementFiltersState extends State<AchievementFilters> {
     );
   }
 
-  Widget _buildCompletionChip(String label, CompletionFilterStatus status, IconData icon) {
+  Widget _buildCompletionChip(
+    String label,
+    CompletionFilterStatus status,
+    IconData icon,
+  ) {
     final isSelected = widget.completionStatus == status;
     return FilterChip(
       visualDensity: VisualDensity.compact,
@@ -143,9 +186,10 @@ class _AchievementFiltersState extends State<AchievementFilters> {
       selectedColor: AppColors.info.withValues(alpha: 0.2),
       backgroundColor: AppColors.darkBackground,
       side: BorderSide(
-        color: isSelected 
-            ? AppColors.info.withValues(alpha: 0.5) 
-            : Colors.white.withValues(alpha: 0.1),
+        color:
+            isSelected
+                ? AppColors.info.withValues(alpha: 0.5)
+                : Colors.white.withValues(alpha: 0.1),
       ),
       label: Row(
         mainAxisSize: MainAxisSize.min,

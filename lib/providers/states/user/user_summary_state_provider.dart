@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/models/user/user_summary_model.dart';
-import 'package:retroachievements_organizer/providers/repositories/user/user_stats_repository_provider.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/user/user_stats_repository.dart';
+import 'package:retroachievements_library/models/user/user_summary_model.dart';
+import 'package:retroachievements_library/providers/repositories/user/user_stats_repository_provider.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/repositories/user/user_stats_repository.dart';
 
 class UserSummaryState {
   final bool isLoading;
@@ -37,8 +37,8 @@ class UserSummaryNotifier extends StateNotifier<UserSummaryState> {
   final String username;
   final String apiKey;
 
-  UserSummaryNotifier(this.repository, this.username, this.apiKey) 
-      : super(UserSummaryState()) {
+  UserSummaryNotifier(this.repository, this.username, this.apiKey)
+    : super(UserSummaryState()) {
     if (username.isNotEmpty && apiKey.isNotEmpty) {
       loadData();
     }
@@ -57,9 +57,9 @@ class UserSummaryNotifier extends StateNotifier<UserSummaryState> {
 
     try {
       final userSummary = await repository.getUserSummary(
-        username, 
-        apiKey, 
-        useCache: !forceRefresh
+        username,
+        apiKey,
+        useCache: !forceRefresh,
       );
 
       if (userSummary != null) {
@@ -83,13 +83,14 @@ class UserSummaryNotifier extends StateNotifier<UserSummaryState> {
   }
 }
 
-final userSummaryStateProvider = StateNotifierProvider<UserSummaryNotifier, UserSummaryState>((ref) {
-  final authState = ref.watch(authStateProvider);
-  final repository = ref.watch(userStatsRepositoryProvider);
-  
-  return UserSummaryNotifier(
-    repository, 
-    authState.username ?? '', 
-    authState.apiKey ?? ''
-  );
-});
+final userSummaryStateProvider =
+    StateNotifierProvider<UserSummaryNotifier, UserSummaryState>((ref) {
+      final authState = ref.watch(authStateProvider);
+      final repository = ref.watch(userStatsRepositoryProvider);
+
+      return UserSummaryNotifier(
+        repository,
+        authState.username ?? '',
+        authState.apiKey ?? '',
+      );
+    });

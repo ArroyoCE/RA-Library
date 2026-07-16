@@ -4,20 +4,21 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:retroachievements_organizer/constants/api_constants.dart';
+import 'package:retroachievements_library/constants/api_constants.dart';
 
 class UserSummaryApi {
-  Future<Map<String, dynamic>> getUserSummary(String username, String apiKey, {bool useCache = true}) async {
+  Future<Map<String, dynamic>> getUserSummary(
+    String username,
+    String apiKey, {
+    bool useCache = true,
+  }) async {
     try {
       final url = ApiConstants.getUserSummaryUrl(username, apiKey);
       final response = await http.get(Uri.parse(url));
-      
+
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-        return {
-          'success': true,
-          'data': decodedResponse,
-        };
+        return {'success': true, 'data': decodedResponse};
       } else {
         return {
           'success': false,
@@ -26,10 +27,7 @@ class UserSummaryApi {
       }
     } catch (e) {
       debugPrint('Error getting user summary: $e');
-      return {
-        'success': false,
-        'error': e.toString(),
-      };
+      return {'success': false, 'error': e.toString()};
     }
   }
 }

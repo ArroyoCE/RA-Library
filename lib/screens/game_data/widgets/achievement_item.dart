@@ -3,7 +3,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 
 class AchievementItem extends StatelessWidget {
   final Map<String, dynamic> achievement;
@@ -25,10 +25,14 @@ class AchievementItem extends StatelessWidget {
     final int numAwarded = achievement['NumAwarded'] ?? 0;
     final int numAwardedHardcore = achievement['NumAwardedHardcore'] ?? 0;
     final String badgeName = achievement['BadgeName'] ?? '';
-    final String type = (achievement['Type'] ?? achievement['type'] ?? '').toString();
-    
+    final String type =
+        (achievement['Type'] ?? achievement['type'] ?? '').toString();
+
     return Card(
-      color: isUnlocked ? AppColors.success.withValues(alpha: 0.2) : AppColors.cardBackground,
+      color:
+          isUnlocked
+              ? AppColors.success.withValues(alpha: 0.2)
+              : AppColors.cardBackground,
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -37,9 +41,9 @@ class AchievementItem extends StatelessWidget {
           children: [
             // Badge image or points badge
             _buildBadge(badgeName, points),
-            
+
             const SizedBox(width: 12),
-            
+
             // Achievement details
             Expanded(
               child: Column(
@@ -52,20 +56,28 @@ class AchievementItem extends StatelessWidget {
                         child: Text(
                           title,
                           style: TextStyle(
-                            color: isUnlocked ? AppColors.success : AppColors.primary,
+                            color:
+                                isUnlocked
+                                    ? AppColors.success
+                                    : AppColors.primary,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       Icon(
-                        isUnlocked ? Icons.check_circle : (type == 'progression' ? Icons.linear_scale : Icons.emoji_events),
-                        color: isUnlocked ? AppColors.success : AppColors.primary,
+                        isUnlocked
+                            ? Icons.check_circle
+                            : (type == 'progression'
+                                ? Icons.linear_scale
+                                : Icons.emoji_events),
+                        color:
+                            isUnlocked ? AppColors.success : AppColors.primary,
                         size: 16,
                       ),
                     ],
                   ),
-                  
+
                   // Description
                   if (description.isNotEmpty)
                     Padding(
@@ -78,60 +90,64 @@ class AchievementItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                  
+
                   // Points and unlock date if available
                   Padding(
-  padding: const EdgeInsets.only(top: 8),
-  child: Row(
-    children: [
-      Text(
-        '$points points',
-        style: TextStyle(
-          color: isUnlocked ? AppColors.success : AppColors.primary,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      const SizedBox(width: 8),
-      Text(
-        'True Score: ${_calculateTrueScore().toStringAsFixed(2)}',
-        style: const TextStyle(
-          color: Colors.amber,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      const Spacer(),
-      if (isUnlocked && achievement['DateEarnedHardcore'] != null)
-        Text(
-          'Unlocked: ${_formatDate(achievement['DateEarnedHardcore'])}',
-          style: const TextStyle(
-            color: AppColors.success,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        )
-      else
-        Row(
-          children: [
-            const Icon(
-              Icons.people,
-              color: AppColors.textSubtle,
-              size: 12,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              'Unlocked by $numAwarded ($numAwardedHardcore HC)',
-              style: const TextStyle(
-                color: AppColors.textSubtle,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-    ],
-  ),
-),
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Row(
+                      children: [
+                        Text(
+                          '$points points',
+                          style: TextStyle(
+                            color:
+                                isUnlocked
+                                    ? AppColors.success
+                                    : AppColors.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'True Score: ${_calculateTrueScore().toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            color: Colors.amber,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        if (isUnlocked &&
+                            achievement['DateEarnedHardcore'] != null)
+                          Text(
+                            'Unlocked: ${_formatDate(achievement['DateEarnedHardcore'])}',
+                            style: const TextStyle(
+                              color: AppColors.success,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        else
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.people,
+                                color: AppColors.textSubtle,
+                                size: 12,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Unlocked by $numAwarded ($numAwardedHardcore HC)',
+                                style: const TextStyle(
+                                  color: AppColors.textSubtle,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -140,27 +156,26 @@ class AchievementItem extends StatelessWidget {
       ),
     );
   }
-  
 
- double _calculateTrueScore() {
-  final int points = achievement['Points'] ?? 0;
-  
-  // Early return if no player data
-  if (numDistinctPlayers <= 0) return points.toDouble();
-  
-  final int numAwardedHardcore = achievement['NumAwardedHardcore'] ?? 1;
-  
-  // Avoid division by zero
-  if (numAwardedHardcore <= 0) return points.toDouble();
-  
-  // Calculate the ratio
-  double ratio = numDistinctPlayers / numAwardedHardcore;
-  
-  // Calculate true score using the formula: points * sqrt(ratio)
-  double trueScore = points * sqrt(ratio);
-  
-  return trueScore;
-}
+  double _calculateTrueScore() {
+    final int points = achievement['Points'] ?? 0;
+
+    // Early return if no player data
+    if (numDistinctPlayers <= 0) return points.toDouble();
+
+    final int numAwardedHardcore = achievement['NumAwardedHardcore'] ?? 1;
+
+    // Avoid division by zero
+    if (numAwardedHardcore <= 0) return points.toDouble();
+
+    // Calculate the ratio
+    double ratio = numDistinctPlayers / numAwardedHardcore;
+
+    // Calculate true score using the formula: points * sqrt(ratio)
+    double trueScore = points * sqrt(ratio);
+
+    return trueScore;
+  }
 
   String _formatDate(String dateString) {
     try {
@@ -170,7 +185,7 @@ class AchievementItem extends StatelessWidget {
       return dateString;
     }
   }
-  
+
   Widget _buildBadge(String badgeName, int points) {
     // Check if we have a valid badge name
     if (badgeName.isNotEmpty) {
@@ -201,11 +216,11 @@ class AchievementItem extends StatelessWidget {
         ),
       );
     }
-    
+
     // If no badge name, use points badge
     return _buildPointsBadge(points);
   }
-  
+
   Widget _buildPointsBadge(int points) {
     return Container(
       width: 64,

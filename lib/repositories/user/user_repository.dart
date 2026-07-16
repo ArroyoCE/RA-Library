@@ -1,4 +1,4 @@
-import 'package:retroachievements_organizer/models/user/user_profile_model.dart';
+import 'package:retroachievements_library/models/user/user_profile_model.dart';
 
 abstract class UserRepository {
   Future<UserProfile?> getUserProfile(String username, String apiKey);

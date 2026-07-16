@@ -1,10 +1,10 @@
 // lib/providers/states/games/user_game_progress_state_provider.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retroachievements_organizer/models/games/user_game_progress_model.dart';
-import 'package:retroachievements_organizer/providers/repositories/games/user_game_progress_repository_provider.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/repositories/games/user_game_progress_repository.dart';
+import 'package:retroachievements_library/models/games/user_game_progress_model.dart';
+import 'package:retroachievements_library/providers/repositories/games/user_game_progress_repository_provider.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/repositories/games/user_game_progress_repository.dart';
 
 class UserGameProgressState {
   final bool isLoading;
@@ -40,8 +40,12 @@ class UserGameProgressNotifier extends StateNotifier<UserGameProgressState> {
   final String username;
   final String apiKey;
 
-  UserGameProgressNotifier(this.repository, this.gameId, this.username, this.apiKey) 
-      : super(UserGameProgressState()) {
+  UserGameProgressNotifier(
+    this.repository,
+    this.gameId,
+    this.username,
+    this.apiKey,
+  ) : super(UserGameProgressState()) {
     if (gameId.isNotEmpty && username.isNotEmpty && apiKey.isNotEmpty) {
       loadData();
     }
@@ -60,10 +64,10 @@ class UserGameProgressNotifier extends StateNotifier<UserGameProgressState> {
 
     try {
       final userGameProgress = await repository.getUserGameProgress(
-        gameId, 
-        username, 
-        apiKey, 
-        useCache: !forceRefresh
+        gameId,
+        username,
+        apiKey,
+        useCache: !forceRefresh,
       );
 
       state = state.copyWith(
@@ -80,27 +84,30 @@ class UserGameProgressNotifier extends StateNotifier<UserGameProgressState> {
   }
 }
 
-final userGameProgressProvider = StateNotifierProviderFamily<UserGameProgressNotifier, UserGameProgressState, String>(
-  (ref, gameId) {
-    final authState = ref.watch(authStateProvider);
-    final repository = ref.watch(userGameProgressRepositoryProvider);
-    
-    return UserGameProgressNotifier(
-      repository, 
-      gameId, 
-      authState.username ?? '', 
-      authState.apiKey ?? ''
-    );
-  }
-);
+final userGameProgressProvider = StateNotifierProviderFamily<
+  UserGameProgressNotifier,
+  UserGameProgressState,
+  String
+>((ref, gameId) {
+  final authState = ref.watch(authStateProvider);
+  final repository = ref.watch(userGameProgressRepositoryProvider);
+
+  return UserGameProgressNotifier(
+    repository,
+    gameId,
+    authState.username ?? '',
+    authState.apiKey ?? '',
+  );
+});
 
 // Provider for getting achievement list with unlock status
-final userGameAchievementsProvider = Provider.family<List<Map<String, dynamic>>, String>((ref, gameId) {
-  final userGameProgressState = ref.watch(userGameProgressProvider(gameId));
-  
-  if (userGameProgressState.data != null) {
-    return userGameProgressState.data!.getAchievementsList();
-  }
-  
-  return [];
-});
+final userGameAchievementsProvider =
+    Provider.family<List<Map<String, dynamic>>, String>((ref, gameId) {
+      final userGameProgressState = ref.watch(userGameProgressProvider(gameId));
+
+      if (userGameProgressState.data != null) {
+        return userGameProgressState.data!.getAchievementsList();
+      }
+
+      return [];
+    });

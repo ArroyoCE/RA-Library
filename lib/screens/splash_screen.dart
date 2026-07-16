@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
-import 'package:retroachievements_organizer/providers/states/auth_state_provider.dart';
-import 'package:retroachievements_organizer/providers/states/consoles/all_consoles_state_provider.dart';
-import 'package:retroachievements_organizer/providers/states/user/user_summary_state_provider.dart';
+import 'package:retroachievements_library/constants/constants.dart';
+import 'package:retroachievements_library/providers/states/auth_state_provider.dart';
+import 'package:retroachievements_library/providers/states/consoles/all_consoles_state_provider.dart';
+import 'package:retroachievements_library/providers/states/user/user_summary_state_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -20,30 +20,30 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     _navigateToNextScreen();
   }
 
- Future<void> _navigateToNextScreen() async {
-  // Small delay to show splash screen
-  await Future.delayed(const Duration(seconds: 1));
+  Future<void> _navigateToNextScreen() async {
+    // Small delay to show splash screen
+    await Future.delayed(const Duration(seconds: 1));
 
-  if (mounted) {
-    final userState = ref.read(authStateProvider);
-    
-    if (userState.isAuthenticated) {
-      // Get notifiers
-      final userSummaryNotifier = ref.read(userSummaryStateProvider.notifier);
-      final consolesNotifier = ref.read(consolesStateProvider.notifier);
-      
-      // Trigger loads without awaiting or storing the futures
-      // This starts the loading processes in the background
-      userSummaryNotifier.loadData();
-      consolesNotifier.loadData();
-      
-      // Navigate to dashboard immediately
-      context.go('/dashboard');
-    } else {
-      context.go('/login');
+    if (mounted) {
+      final userState = ref.read(authStateProvider);
+
+      if (userState.isAuthenticated) {
+        // Get notifiers
+        final userSummaryNotifier = ref.read(userSummaryStateProvider.notifier);
+        final consolesNotifier = ref.read(consolesStateProvider.notifier);
+
+        // Trigger loads without awaiting or storing the futures
+        // This starts the loading processes in the background
+        userSummaryNotifier.loadData();
+        consolesNotifier.loadData();
+
+        // Navigate to dashboard immediately
+        context.go('/dashboard');
+      } else {
+        context.go('/login');
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +54,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Logo
-            Image.asset(
-              'images/ra-icon.png',
-              height: 150,
-              width: 150,
-            ),
+            Image.asset('images/ra-icon.png', height: 150, width: 150),
             const SizedBox(height: 24),
             // App name
             const Text(

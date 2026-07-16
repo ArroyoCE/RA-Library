@@ -1,21 +1,22 @@
 // lib/screens/games/utils/hash_matching_service.dart
 
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/models/consoles/all_game_hash.dart';
-import 'package:retroachievements_organizer/models/local/hash_match_model.dart';
+import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
+import 'package:retroachievements_library/models/local/hash_match_model.dart';
 
 class HashMatchingService {
   /// Match game hashes with local hashes
   static List<HashMatchModel> matchGames(
-    List<GameHash> games, 
-    Map<String, String> localHashes
+    List<GameHash> games,
+    Map<String, String> localHashes,
   ) {
     final List<HashMatchModel> matchResults = [];
 
     for (final game in games) {
       // Convert game hashes to strings
-      final List<String> apiHashes = game.hashes.map((hash) => hash.toLowerCase()).toList();
-      
+      final List<String> apiHashes =
+          game.hashes.map((hash) => hash.toLowerCase()).toList();
+
       // Create match model
       final matchModel = HashMatchModel.fromGame(
         game.id,
@@ -23,7 +24,7 @@ class HashMatchingService {
         apiHashes,
         localHashes,
       );
-      
+
       matchResults.add(matchModel);
     }
 
@@ -41,7 +42,7 @@ class HashMatchingService {
         return Colors.red;
     }
   }
-  
+
   /// Get text based on match status
   static String getMatchStatusText(MatchStatus status) {
     switch (status) {

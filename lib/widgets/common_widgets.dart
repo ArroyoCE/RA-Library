@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:retroachievements_organizer/constants/constants.dart';
+import 'package:retroachievements_library/constants/constants.dart';
 import 'package:window_manager/window_manager.dart';
 
 // Custom AppBar
@@ -7,11 +7,7 @@ class RAAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
 
-  const RAAppBar({
-    super.key,
-    required this.title,
-    this.actions,
-  });
+  const RAAppBar({super.key, required this.title, this.actions});
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +16,7 @@ class RAAppBar extends StatelessWidget implements PreferredSizeWidget {
         backgroundColor: AppColors.appBarBackground,
         title: Row(
           children: [
-            Image.asset(
-              'images/ra-icon.png',
-              height: 24,
-              width: 24,
-            ),
+            Image.asset('images/ra-icon.png', height: 24, width: 24),
             const SizedBox(width: 8),
             Text(
               title,
@@ -126,26 +118,25 @@ class RAPrimaryButton extends StatelessWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textDark,
         minimumSize: const Size(double.infinity, 50),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.textDark),
-                strokeWidth: 3,
+      child:
+          isLoading
+              ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.textDark),
+                  strokeWidth: 3,
+                ),
+              )
+              : Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            )
-          : Text(
-              text,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
     );
   }
 }
