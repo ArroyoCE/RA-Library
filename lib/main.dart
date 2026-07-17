@@ -8,7 +8,7 @@ void main() async {
 
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = const WindowOptions(
-    minimumSize: Size(1200, 800),
+    minimumSize: Size(1400, 800),
     titleBarStyle: TitleBarStyle.hidden,
     title: 'RetroAchievements Library',
   );

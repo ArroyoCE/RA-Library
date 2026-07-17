@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
 import 'package:retroachievements_library/models/local/hash_match_model.dart';
+import 'package:retroachievements_library/providers/states/settings_state_provider.dart';
 import 'package:retroachievements_library/screens/games/widgets/game_list_item.dart';
 
 class GamesList extends StatelessWidget {
@@ -10,6 +11,7 @@ class GamesList extends StatelessWidget {
   final Function(GameHash) onGameSelected;
   final Map<int, MatchStatus>? matchStatuses;
   final bool isHashingInProgress;
+  final HashDisplayPreference hashDisplayPreference;
 
   const GamesList({
     super.key,
@@ -17,6 +19,7 @@ class GamesList extends StatelessWidget {
     required this.onGameSelected,
     this.matchStatuses,
     this.isHashingInProgress = false,
+    this.hashDisplayPreference = HashDisplayPreference.accountForEveryHash,
   });
 
   @override
@@ -36,6 +39,7 @@ class GamesList extends StatelessWidget {
           onTap: () => onGameSelected(game),
           matchStatus: matchStatus,
           isHashingInProgress: isHashingInProgress,
+          hashDisplayPreference: hashDisplayPreference,
         );
       },
     );

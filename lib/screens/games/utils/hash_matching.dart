@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
 import 'package:retroachievements_library/models/local/hash_match_model.dart';
 
+import 'package:retroachievements_library/providers/states/settings_state_provider.dart';
+
 class HashMatchingService {
   /// Match game hashes with local hashes
   static List<HashMatchModel> matchGames(
@@ -44,10 +46,10 @@ class HashMatchingService {
   }
 
   /// Get text based on match status
-  static String getMatchStatusText(MatchStatus status) {
+  static String getMatchStatusText(MatchStatus status, HashDisplayPreference preference) {
     switch (status) {
       case MatchStatus.fullMatch:
-        return 'Full Match';
+        return preference == HashDisplayPreference.accountForEveryHash ? 'Full Match' : 'In Library';
       case MatchStatus.partialMatch:
         return 'Partial Match';
       case MatchStatus.noMatch:

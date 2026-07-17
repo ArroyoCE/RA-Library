@@ -3,6 +3,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum HashDisplayPreference {
+  onlyCountGames,
+  onlyCountGamesShowHashes,
+  accountForEveryHash,
+}
+
 class SettingsState {
   final bool ignoreHack;
   final bool ignoreHomebrew;
@@ -10,6 +16,7 @@ class SettingsState {
   final bool ignoreUnlicensed;
   final bool ignoreDemo;
   final bool ignoreSubset;
+  final HashDisplayPreference hashDisplayPreference;
 
   SettingsState({
     this.ignoreHack = false,
@@ -18,6 +25,7 @@ class SettingsState {
     this.ignoreUnlicensed = false,
     this.ignoreDemo = false,
     this.ignoreSubset = false,
+    this.hashDisplayPreference = HashDisplayPreference.accountForEveryHash,
   });
 
   SettingsState copyWith({
@@ -27,6 +35,7 @@ class SettingsState {
     bool? ignoreUnlicensed,
     bool? ignoreDemo,
     bool? ignoreSubset,
+    HashDisplayPreference? hashDisplayPreference,
   }) {
     return SettingsState(
       ignoreHack: ignoreHack ?? this.ignoreHack,
@@ -35,6 +44,7 @@ class SettingsState {
       ignoreUnlicensed: ignoreUnlicensed ?? this.ignoreUnlicensed,
       ignoreDemo: ignoreDemo ?? this.ignoreDemo,
       ignoreSubset: ignoreSubset ?? this.ignoreSubset,
+      hashDisplayPreference: hashDisplayPreference ?? this.hashDisplayPreference,
     );
   }
   
@@ -63,6 +73,8 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       ignoreUnlicensed: prefs.getBool('ignore_unlicensed') ?? false,
       ignoreDemo: prefs.getBool('ignore_demo') ?? false,
       ignoreSubset: prefs.getBool('ignore_subset') ?? false,
+      hashDisplayPreference: HashDisplayPreference.values[
+          prefs.getInt('hash_display_preference') ?? 2],
     );
   }
 
@@ -100,6 +112,12 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('ignore_subset', value);
     state = state.copyWith(ignoreSubset: value);
+  }
+
+  Future<void> setHashDisplayPreference(HashDisplayPreference value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('hash_display_preference', value.index);
+    state = state.copyWith(hashDisplayPreference: value);
   }
 }
 

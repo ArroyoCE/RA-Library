@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retroachievements_library/constants/constants.dart';
 import 'package:retroachievements_library/models/consoles/all_console_model.dart';
+import 'package:retroachievements_library/providers/states/settings_state_provider.dart';
 import 'package:retroachievements_library/widgets/generic_grid_display.dart';
 
 class ConsolesGrid extends ConsumerWidget {
@@ -19,6 +20,9 @@ class ConsolesGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+    final hashDisplayPreference = settings.hashDisplayPreference;
+
     return GenericGridDisplay<Console>(
       items: consoles,
       crossAxisCount: 6,
@@ -34,6 +38,7 @@ class ConsolesGrid extends ConsumerWidget {
           console: console,
           isSupported: isSupported,
           libraryStats: libraryStats,
+          hashDisplayPreference: hashDisplayPreference,
         );
       },
     );
@@ -43,8 +48,8 @@ class ConsolesGrid extends ConsumerWidget {
     required BuildContext context,
     required Console console,
     required bool isSupported,
-
     required Map<int, Map<String, dynamic>> libraryStats,
+    required HashDisplayPreference hashDisplayPreference,
   }) {
     final hasLibraryStats = libraryStats.containsKey(console.id);
     final totalGames =
@@ -153,16 +158,17 @@ class ConsolesGrid extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Text(
-                      'Hashes: $matchedHashes/$totalHashes',
-                      style: const TextStyle(
-                        color: AppColors.textLight,
-                        fontSize: 10,
+                    if (hashDisplayPreference != HashDisplayPreference.onlyCountGames)
+                      Text(
+                        'Hashes: $matchedHashes/$totalHashes',
+                        style: const TextStyle(
+                          color: AppColors.textLight,
+                          fontSize: 10,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
                   ],
                 ),
             ],

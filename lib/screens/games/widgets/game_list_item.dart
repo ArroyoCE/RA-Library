@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:retroachievements_library/constants/constants.dart';
 import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
 import 'package:retroachievements_library/models/local/hash_match_model.dart';
+import 'package:retroachievements_library/providers/states/settings_state_provider.dart';
 import 'package:retroachievements_library/screens/games/utils/games_helper.dart';
 import 'package:retroachievements_library/screens/games/utils/hash_matching.dart';
 
@@ -12,6 +13,7 @@ class GameListItem extends StatelessWidget {
   final VoidCallback onTap;
   final MatchStatus? matchStatus;
   final bool isHashingInProgress;
+  final HashDisplayPreference hashDisplayPreference;
 
   const GameListItem({
     super.key,
@@ -19,6 +21,7 @@ class GameListItem extends StatelessWidget {
     required this.onTap,
     this.matchStatus,
     this.isHashingInProgress = false,
+    this.hashDisplayPreference = HashDisplayPreference.accountForEveryHash,
   });
 
   @override
@@ -29,7 +32,7 @@ class GameListItem extends StatelessWidget {
 
     if (matchStatus != null) {
       statusColor = HashMatchingService.getMatchStatusColor(matchStatus!);
-      statusText = HashMatchingService.getMatchStatusText(matchStatus!);
+      statusText = HashMatchingService.getMatchStatusText(matchStatus!, hashDisplayPreference);
     }
 
     return Card(
@@ -113,14 +116,16 @@ class GameListItem extends StatelessWidget {
                     ),
 
                     // Hash count
-                    const SizedBox(height: 4),
-                    Text(
-                      'Hashes: ${game.hashes.length}',
-                      style: const TextStyle(
-                        color: AppColors.textSubtle,
-                        fontSize: 10,
+                    if (hashDisplayPreference != HashDisplayPreference.onlyCountGames) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'Hashes: ${game.hashes.length}',
+                        style: const TextStyle(
+                          color: AppColors.textSubtle,
+                          fontSize: 10,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

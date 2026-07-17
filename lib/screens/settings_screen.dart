@@ -161,9 +161,10 @@ class _SettingsContentState extends ConsumerState<SettingsContent>
       elevation: 4,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // Settings title
             const Text(
               'Settings',
@@ -198,6 +199,71 @@ class _SettingsContentState extends ConsumerState<SettingsContent>
               },
             ),
 
+            const Divider(color: Colors.grey),
+
+            const SizedBox(height: 12),
+            const Text(
+              'Hash and Game Display Preference:',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            RadioGroup<HashDisplayPreference>(
+              groupValue: ref.watch(settingsProvider).hashDisplayPreference,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(settingsProvider.notifier).setHashDisplayPreference(value);
+                }
+              },
+              child: const Column(
+                children: [
+                  RadioListTile<HashDisplayPreference>(
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                    title: Text(
+                      'Only Count Games',
+                      style: TextStyle(color: AppColors.textLight, fontSize: 13),
+                    ),
+                    subtitle: Text(
+                      'Hides hash counts and tags partial matches as In Library.',
+                      style: TextStyle(color: AppColors.textSubtle, fontSize: 11),
+                    ),
+                    value: HashDisplayPreference.onlyCountGames,
+                    activeColor: AppColors.primary,
+                  ),
+                  RadioListTile<HashDisplayPreference>(
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                    title: Text(
+                      'Only Count Games but Show Hash Information',
+                      style: TextStyle(color: AppColors.textLight, fontSize: 13),
+                    ),
+                    subtitle: Text(
+                      'Shows hash info but progress relies on game count. Tags partial matches as In Library.',
+                      style: TextStyle(color: AppColors.textSubtle, fontSize: 11),
+                    ),
+                    value: HashDisplayPreference.onlyCountGamesShowHashes,
+                    activeColor: AppColors.primary,
+                  ),
+                  RadioListTile<HashDisplayPreference>(
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                    title: Text(
+                      'Account for every hash',
+                      style: TextStyle(color: AppColors.textLight, fontSize: 13),
+                    ),
+                    subtitle: Text(
+                      'Progress bar relies on hashes. Distinguishes partial and full matches.',
+                      style: TextStyle(color: AppColors.textSubtle, fontSize: 11),
+                    ),
+                    value: HashDisplayPreference.accountForEveryHash,
+                    activeColor: AppColors.primary,
+                  ),
+                ],
+              ),
+            ),
             const Divider(color: Colors.grey),
 
             const SizedBox(height: 12),
@@ -341,11 +407,12 @@ class _SettingsContentState extends ConsumerState<SettingsContent>
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                'Version: 1.0.0 (Beta)',
+                'Version: 1.1.0',
                 style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ),
           ],
+          ),
         ),
       ),
     );

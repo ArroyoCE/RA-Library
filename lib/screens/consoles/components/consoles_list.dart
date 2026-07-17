@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retroachievements_library/constants/constants.dart';
 import 'package:retroachievements_library/models/consoles/all_console_model.dart';
+import 'package:retroachievements_library/providers/states/settings_state_provider.dart';
 import 'package:retroachievements_library/screens/consoles/utils/consoles_helper.dart';
 import 'package:retroachievements_library/screens/dashboard/widgets/progress_bar.dart';
 
@@ -20,6 +21,9 @@ class ConsolesList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+    final hashDisplayPreference = settings.hashDisplayPreference;
+
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: consoles.length,
@@ -33,6 +37,7 @@ class ConsolesList extends ConsumerWidget {
           console: console,
           isSupported: isSupported,
           libraryStats: libraryStats,
+          hashDisplayPreference: hashDisplayPreference,
         );
       },
     );
@@ -43,6 +48,7 @@ class ConsolesList extends ConsumerWidget {
     required Console console,
     required bool isSupported,
     required Map<int, Map<String, dynamic>> libraryStats,
+    required HashDisplayPreference hashDisplayPreference,
   }) {
     final hasLibraryStats = libraryStats.containsKey(console.id);
     final totalGames =
@@ -54,8 +60,16 @@ class ConsolesList extends ConsumerWidget {
     final matchedHashes =
         hasLibraryStats ? libraryStats[console.id]!['matchedHashes'] ?? 0 : 0;
 
-    final completionPercentage =
+    final gameCompletionPercentage =
         totalGames > 0 ? (matchedGames / totalGames * 100) : 0.0;
+    final hashCompletionPercentage =
+        totalHashes > 0 ? (matchedHashes / totalHashes * 100) : 0.0;
+
+    final completionPercentage =
+        hashDisplayPreference == HashDisplayPreference.accountForEveryHash
+            ? hashCompletionPercentage
+            : gameCompletionPercentage;
+
     final progressColor = ConsolesHelper.getCompletionColor(
       completionPercentage,
     );
@@ -169,7 +183,7 @@ class ConsolesList extends ConsumerWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                'Games: $matchedGames/$totalGames (${completionPercentage.toStringAsFixed(1)}%)',
+                                'Games: $matchedGames/$totalGames (${gameCompletionPercentage.toStringAsFixed(1)}%)',
                                 style: const TextStyle(
                                   color: AppColors.textLight,
                                   fontSize: 12,
@@ -177,24 +191,26 @@ class ConsolesList extends ConsumerWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.tag,
-                                color: AppColors.primary,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Hashes: $matchedHashes/$totalHashes (${(totalHashes > 0 ? matchedHashes / totalHashes * 100 : 0).toStringAsFixed(1)}%)',
-                                style: const TextStyle(
-                                  color: AppColors.textLight,
-                                  fontSize: 12,
+                          if (hashDisplayPreference != HashDisplayPreference.onlyCountGames) ...[
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.tag,
+                                  color: AppColors.primary,
+                                  size: 14,
                                 ),
-                              ),
-                            ],
-                          ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Hashes: $matchedHashes/$totalHashes (${hashCompletionPercentage.toStringAsFixed(1)}%)',
+                                  style: const TextStyle(
+                                    color: AppColors.textLight,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
 
                           // Progress bar
                           const SizedBox(height: 8),

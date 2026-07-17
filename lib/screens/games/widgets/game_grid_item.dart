@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:retroachievements_library/constants/constants.dart';
 import 'package:retroachievements_library/models/consoles/all_game_hash.dart';
 import 'package:retroachievements_library/models/local/hash_match_model.dart';
+import 'package:retroachievements_library/providers/states/settings_state_provider.dart';
 import 'package:retroachievements_library/screens/games/utils/games_helper.dart';
 import 'package:retroachievements_library/screens/games/utils/hash_matching.dart';
 
@@ -12,6 +13,7 @@ class GameGridItem extends StatelessWidget {
   final VoidCallback onTap;
   final MatchStatus? matchStatus;
   final bool isHashingInProgress;
+  final HashDisplayPreference hashDisplayPreference;
 
   const GameGridItem({
     super.key,
@@ -19,6 +21,7 @@ class GameGridItem extends StatelessWidget {
     required this.onTap,
     this.matchStatus,
     this.isHashingInProgress = false,
+    this.hashDisplayPreference = HashDisplayPreference.accountForEveryHash,
   });
 
   @override
@@ -29,7 +32,7 @@ class GameGridItem extends StatelessWidget {
 
     if (matchStatus != null) {
       statusColor = HashMatchingService.getMatchStatusColor(matchStatus!);
-      statusText = HashMatchingService.getMatchStatusText(matchStatus!);
+      statusText = HashMatchingService.getMatchStatusText(matchStatus!, hashDisplayPreference);
     }
 
     return Card(
@@ -48,30 +51,6 @@ class GameGridItem extends StatelessWidget {
                 children: [
                   // Game image
                   _buildGameImage(),
-
-                  // Match status indicator
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        statusText,
-                        style: const TextStyle(
-                          color: AppColors.textLight,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
 
                   // Achievement count
                   Positioned(
@@ -138,8 +117,31 @@ class GameGridItem extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (matchStatus != null) const Spacer(),
+                    const SizedBox(height: 4),
                     if (matchStatus != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: statusColor, width: 1),
+                        ),
+                        child: Text(
+                          statusText,
+                          style: TextStyle(
+                            color: statusColor,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    if (matchStatus != null) const Spacer(),
+                    if (matchStatus != null && hashDisplayPreference != HashDisplayPreference.onlyCountGames)
                       Row(
                         children: [
                           Container(

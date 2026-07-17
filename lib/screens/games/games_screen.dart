@@ -223,6 +223,9 @@ class _GamesScreenState extends ConsumerState<GamesScreen>
       // Determine status
       if (matchCount == 0) {
         statuses[game.id] = MatchStatus.noMatch;
+      } else if (settings.hashDisplayPreference != HashDisplayPreference.accountForEveryHash) {
+        statuses[game.id] = MatchStatus.fullMatch;
+        matchedGamesCount++;
       } else if (matchCount == apiHashes.length) {
         statuses[game.id] = MatchStatus.fullMatch;
         matchedGamesCount++;
@@ -683,6 +686,19 @@ class _GamesScreenState extends ConsumerState<GamesScreen>
   Widget build(BuildContext context) {
     super.build(context);
 
+    ref.listen<SettingsState>(settingsProvider, (previous, next) {
+      if (previous?.hashDisplayPreference != next.hashDisplayPreference ||
+          previous?.ignoreHack != next.ignoreHack ||
+          previous?.ignoreHomebrew != next.ignoreHomebrew ||
+          previous?.ignorePrototype != next.ignorePrototype ||
+          previous?.ignoreUnlicensed != next.ignoreUnlicensed ||
+          previous?.ignoreDemo != next.ignoreDemo ||
+          previous?.ignoreSubset != next.ignoreSubset) {
+        _matchGamesWithLocalHashes();
+      }
+    });
+
+    final settings = ref.watch(settingsProvider);
     final filteredGames = _getFilteredGames();
     final gamesState = ref.watch(gamesHashesStateProvider);
 
@@ -797,12 +813,14 @@ class _GamesScreenState extends ConsumerState<GamesScreen>
                             onGameSelected: _navigateToGameDetails,
                             matchStatuses: _matchStatuses,
                             isHashingInProgress: _isHashingInProgress,
+                            hashDisplayPreference: settings.hashDisplayPreference,
                           )
                           : GamesList(
                             games: filteredGames,
                             onGameSelected: _navigateToGameDetails,
                             matchStatuses: _matchStatuses,
                             isHashingInProgress: _isHashingInProgress,
+                            hashDisplayPreference: settings.hashDisplayPreference,
                           ),
                 ),
           ],
