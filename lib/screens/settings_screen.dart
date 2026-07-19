@@ -407,7 +407,7 @@ class _SettingsContentState extends ConsumerState<SettingsContent>
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                'Version: 1.1.0',
+                'Version: 1.2.0',
                 style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ),

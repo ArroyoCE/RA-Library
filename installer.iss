@@ -1,5 +1,5 @@
 #define MyAppName "RetroAchievements Library"
-#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "RetroAchievements Library"
 #define MyAppExeName "retroachievements_library.exe"
 #define BuildOutputDir "build\windows\x64\runner\Release"

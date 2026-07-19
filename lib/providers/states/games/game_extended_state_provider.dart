@@ -67,12 +67,16 @@ class GameExtendedNotifier extends StateNotifier<GameExtendedState> {
         useCache: !forceRefresh,
       );
 
+      if (!mounted) return;
+
       state = state.copyWith(
         data: gameExtended,
         isLoading: false,
         lastUpdated: DateTime.now(),
       );
     } catch (e) {
+      if (!mounted) return;
+
       state = state.copyWith(
         errorMessage: 'Error loading extended game data: $e',
         isLoading: false,
